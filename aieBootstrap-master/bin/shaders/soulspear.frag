@@ -1,8 +1,9 @@
-// FRAGMENT SHADER - USE SHADOW
+// FRAGMENT SHADER
 #version 410
 
-in vec4 vNormal;
-in vec4 vPosition;
+in vec2 vUV;
+in vec3 vNormal;
+in vec3 vPosition;
 
 out vec4 FragColour;
 
@@ -23,12 +24,3 @@ void main()
 	
 	FragColour = vec4(LightColour * d + LightColour * s, 1);
 }
-
-/*
-Definitions:
-vNormal = Bunny vertex normal
-lightColour = replaces hardcoded vec3(0,1,0)
-lightDir = holds a vec3 (vec3(0,1,0)
-- Points to Direction of light origin
-- Used by ShadowMap
-*/
