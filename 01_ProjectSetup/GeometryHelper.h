@@ -16,7 +16,7 @@ namespace GeometryHelper
 	};
 
 
-	void loadObjFromFile(std::string filepath);
+	std::vector<RenderData*> loadObjFromFile(std::string filepath);
 
 
 };

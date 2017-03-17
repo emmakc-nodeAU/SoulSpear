@@ -91,12 +91,14 @@
   <ItemGroup>
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="RenderData.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="_01_ProjectSetupApp.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="RenderData.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="_01_ProjectSetupApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

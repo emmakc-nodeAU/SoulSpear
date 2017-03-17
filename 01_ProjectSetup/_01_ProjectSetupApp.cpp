@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include "GeometryHelper.h"
+#include "RenderData.h"
+#include <gl_core_4_4.h>
+#include "Shader.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -28,9 +31,8 @@ bool _01_ProjectSetupApp::startup() {
 	// create simple camera transforms
 	m_viewMatrix = glm::lookAt(vec3(10), vec3(0), vec3(0, 1, 0));
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, 16.0f / 9.0f, 0.1f, 1000.0f);
-
-	GeometryHelper::loadObjFromFile("./soulspear/soulspear.obj");
-
+	m_SoulSpear = GeometryHelper::loadObjFromFile("./soulspear/soulspear.obj");
+	m_SoulSpearShader = new Shader("./shaders/soulSpear.vert","./shaders/soulspear.frag");
 	return true;
 }
 
@@ -73,6 +75,13 @@ void _01_ProjectSetupApp::draw() {
 
 	// update perspective based on screen size
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, getWindowWidth() / (float)getWindowHeight(), 0.1f, 1000.0f);
+
+	// 5. DRAW RENDER DATA
+	for (auto& mesh : m_SoulSpear)
+	{
+		mesh->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumberOfIndicies());
+	}
 
 	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
 }

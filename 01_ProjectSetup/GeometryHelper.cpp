@@ -9,7 +9,7 @@
 
 namespace GeometryHelper
 {
-	void loadObjFromFile(std::string filepath)
+	std::vector<RenderData*> loadObjFromFile(std::string filepath)
 	{
 		// 1. Load Object
 		std::string path = filepath;
@@ -20,6 +20,7 @@ namespace GeometryHelper
 		bool success = tinyobj::LoadObj(&attribs, &shapes, &materials,
 			&err, filepath.c_str());
 
+		std::vector<RenderData*> dataToReturn;
 		for (auto& shape : shapes)
 		{
 			// 2. Create a Vector Dynamic Array
@@ -60,50 +61,31 @@ namespace GeometryHelper
 			renderData->GenerateBuffers(false);
 			renderData->Bind();
 
-			// Send CPU to GPU
-			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(OBJVertex), vertices.data(), GL_STATIC_DRAW);
+			// PUSH DATA CPU to GPU
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * 
+				sizeof(OBJVertex), vertices.data(), GL_STATIC_DRAW);
 
-			// Assign Vertex Data to CPU Index
+			// Specify a CPU slot for Vertex Data
 			glEnableVertexAttribArray(0);	// Position (Slot, No. Vars, Data Type, Normalise?, Buffer Size, Locate at Index = DataType size(Float4) * No.Vars)
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), 0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 
+				sizeof(OBJVertex), 0);
 
 			glEnableVertexAttribArray(1);	// Normal Data
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), (void*)12);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 
+				sizeof(OBJVertex), (void*)12);
 
 			glEnableVertexAttribArray(2);	// Texture Data
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(OBJVertex), (void*)24);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 
+				sizeof(OBJVertex), (void*)24);
 
-			// 4.
-
-
-
-
-
-
+			// 4. SAVE RENDER DATA
+			renderData->SetNumberofIndicies(vertices.size());
+			dataToReturn.push_back(renderData);
 
 
 		}
-
 		
-
-
-
-		//// 2. Display an Object
-		//void createOpenGLBuffers(tinyobj::attrib_t&attribs, std::vector<tinyobj::shape_t>&shapes);
-		//
-		//// 3. Create OpenGL Buffer per OBJ
-		//struct OpenGLInfo
-		//{
-		//	unsigned int m_VAO;
-		//	unsigned int m_VBO;
-		//	unsigned int m_faceCount;
-		//};
-		//
-		//// 4. Create multi obj storage vector
-		//std::vector<OpenGLInfo> m_glInfo;
-		//
-		//// 5. Create storage vector per Shape, containing shape's vertex data
-		//std::vector<OBJVertex
+		return dataToReturn;
 	}
 }
 
