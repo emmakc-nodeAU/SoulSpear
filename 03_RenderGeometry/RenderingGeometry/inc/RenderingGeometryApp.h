@@ -3,6 +3,17 @@
 #include "Application.h"
 #include <glm/mat4x4.hpp>
 
+class Camera;
+
+struct Vertex
+{
+	glm::vec4 position;
+	glm::vec4 colour;
+
+	// Describe structure of vertex
+	static void SetupVertexAttribPointers();
+};
+
 class RenderingGeometryApp : public aie::Application {
 public:
 
@@ -15,9 +26,20 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	void CreateGeometry();
+	void DestroyGeometry();
+
 protected:
 
+	unsigned int m_vertCount;
+	unsigned int m_indicesCount;
+
+	// BUFFERS FOR OpenGL
+	unsigned int m_vao;	// Holds information about Vertex and Binds VBO/IBO
+	unsigned int m_vbo;	// Holds vertices
+	unsigned int m_ibo;	// Holds indices
+
 	// camera transforms
-	glm::mat4	m_viewMatrix;
-	glm::mat4	m_projectionMatrix;
+	Camera *m_camera;
+
 };
