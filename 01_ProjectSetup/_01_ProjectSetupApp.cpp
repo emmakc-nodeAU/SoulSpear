@@ -3,10 +3,12 @@
 #include "Input.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-#include "GeometryHelper.h"
+
 #include "RenderData.h"
-#include <gl_core_4_4.h>
 #include "Shader.h"
+#include "GeometryHelper.h"
+
+#include <gl_core_4_4.h>
 
 using glm::vec3;
 using glm::vec4;
@@ -31,8 +33,12 @@ bool _01_ProjectSetupApp::startup() {
 	// create simple camera transforms
 	m_viewMatrix = glm::lookAt(vec3(10), vec3(0), vec3(0, 1, 0));
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f, 16.0f / 9.0f, 0.1f, 1000.0f);
+	
 	m_SoulSpear = GeometryHelper::loadObjFromFile("./soulspear/soulspear.obj");
-	m_SoulSpearShader = new Shader("./shaders/soulSpear.vert","./shaders/soulspear.frag");
+	m_SoulSpearShader = new Shader(
+		"./shaders/soulSpear.vert",
+		"./shaders/soulspear.frag");
+	
 	return true;
 }
 

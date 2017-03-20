@@ -2,10 +2,10 @@
 #include <gl_core_4_4.h>
 #include <glm/glm.hpp>
 
-#include "RenderData.h"
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+
+#include "RenderData.h"
 
 namespace GeometryHelper
 {

@@ -20,6 +20,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_ProjectSetup", "..\01_Pr
 		{AF59BB0B-E059-4773-83DC-728A949647DA} = {AF59BB0B-E059-4773-83DC-728A949647DA}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_FlyCamera", "..\02_FlyCamera\FlyCamera\FlyCamera.vcxproj", "{BD048742-479B-42A3-8222-4BB7916CC412}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF59BB0B-E059-4773-83DC-728A949647DA} = {AF59BB0B-E059-4773-83DC-728A949647DA}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -42,6 +47,10 @@ Global
 		{DEA49362-B428-4215-8D64-4EA0B4FF0858}.Debug|x86.Build.0 = Debug|Win32
 		{DEA49362-B428-4215-8D64-4EA0B4FF0858}.Release|x86.ActiveCfg = Release|Win32
 		{DEA49362-B428-4215-8D64-4EA0B4FF0858}.Release|x86.Build.0 = Release|Win32
+		{BD048742-479B-42A3-8222-4BB7916CC412}.Debug|x86.ActiveCfg = Debug|Win32
+		{BD048742-479B-42A3-8222-4BB7916CC412}.Debug|x86.Build.0 = Debug|Win32
+		{BD048742-479B-42A3-8222-4BB7916CC412}.Release|x86.ActiveCfg = Release|Win32
+		{BD048742-479B-42A3-8222-4BB7916CC412}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
