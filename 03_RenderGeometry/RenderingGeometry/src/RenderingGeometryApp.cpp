@@ -59,8 +59,10 @@ bool RenderingGeometryApp::startup() {
 }
 
 void RenderingGeometryApp::shutdown() {
+	
 	DestroyGeometry();
 	UnloadShader();
+
 	delete m_camera;
 	Gizmos::destroy();
 }
@@ -133,14 +135,13 @@ void RenderingGeometryApp::CreateGeometry()
 	Specify position, colour for each vert of a cube
 	Example: Each face does not shar ea vert, 4 verts per face of cube
 	*/
-	Vertex verts[] =
-	{
+	Vertex verts[] = {
 															// {POSITION} , {COLOUR}
 															// FRONT FACE	- RED
 	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 0
 	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 1
 	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 2
-	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 3
+	{ {-0.5f, 0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 3
 
 															// BACK FACE	- YELLOW
 	{ { -0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 1.0f, 0.0f, 0.5f } },	// 4
@@ -161,16 +162,16 @@ void RenderingGeometryApp::CreateGeometry()
 	{ { 0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 15
 
 															// TOP FACE		- BLUE
-	{ {-0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 12
-	{ {-0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 13
-	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 14
-	{ { 0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 15
+	{ {-0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 16
+	{ {-0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 17
+	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 18
+	{ { 0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 19
 
 															// BOTTOM FACE	- MAGENTA
-	{ {-0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 12
-	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 13
-	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 14
-	{ { 0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 15
+	{ {-0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 20
+	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 21
+	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 22
+	{ { 0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } }	// 23
 	};
 	/*
 	STEP 2:
@@ -208,43 +209,36 @@ void RenderingGeometryApp::CreateGeometry()
 	m_vertCount = sizeof(verts) / sizeof(Vertex);
 	m_indicesCount = sizeof(indices) / sizeof(unsigned char);
 
-	/*
-	STEP 4:
-	Generate: VAO and Bind it
-	Group: VBO and IBO will be grouped with VAO
-	*/
-	// Generate Buffers:
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ibo);
+	/* STEP 4:
+	Generate: VAO and Bind it */
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
 
-	/*
-	STEP 5:
+	/* STEP 5:
 	Create VBO and IBO
 	Tell OpenGL Buffer Type and use
 	VBO: Buffer in graphics memory to contain vertices
 	IBO: Buffer in graphics memory to contain indices
 	Fill buffers with generated data
-	Sends Verts and Indices from CPU to GPU
-	*/
-	// BIND BUFFERS
+	Sends Verts and Indices from CPU to GPU */
+	// Generate
+	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_ibo);
+	// Bind
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 	// FILL BUFFERS with data size, pointer to first item in memory
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	/*
-	STEP 6:
+	/* STEP 6:
 	Describe Vertices shape
 	Example: Each vertex holds a position and colour
-	Shape of vertex descibed to OpenGL - send to shader, and mapped to location
-	*/
+	Shape of vertex descibed to OpenGL - send to shader, and mapped to location */
 	Vertex::SetupVertexAttribPointers();
 
-	/*
-	STEP 7:
-	Unbind Buffers - pass in 0
-	*/
+	/* STEP 7:
+	Unbind Buffers - pass in 0 */
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -261,25 +255,20 @@ void RenderingGeometryApp::DestroyGeometry()
 void RenderingGeometryApp::LoadShader()
 {
 	// SHADER: Vertex
-	/*
-	Position:	attribute 0
-	Colour:		attribute 1
-	*/
+	/*	Position:	attribute 0
+		Colour:		attribute 1 */
 	static const char* vertex_shader =
 "#version 400\n \
 in vec4 vPosition;\n \
-in vec4 vColour; \n \
-out vec4 fColour; \n \
-uniform mat4 projectionView; \n \
+in vec4 vColour;\n \
+out vec4 fColour;\n \
+uniform mat4 projectionView;\n \
 void main ()\n \
 {\n \
 	fColour = vColour;\n \
-gl_Position = projectionView * vPosition;\n\
+	gl_Position = projectionView * vPosition;\n\
 }";
 	// SHADER: Fragment
-	/*
-	Colour:		final colour: frag colour
-	*/
 	static const char* fragment_shader =
 "#version 400\n \
 in vec4 fColour;\n \
@@ -290,10 +279,8 @@ void main ()\n \
 ";
 
 	// LOAD GEOMETRY
-	/*
-	STEP 1:
-	Create vertex shader, link to source code, compile it
-	*/
+	/* STEP 1:
+	Create vertex shader, link to source code, compile it */
 	// Create: Vertex Shader
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vs, 1, &vertex_shader, NULL);
@@ -362,11 +349,11 @@ void Vertex::SetupVertexAttribPointers()
 	// Loading Shader: Colour element is location 1
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(
-		1,							// Attribute 1 (Colour)
-		4,							// Size: How many floats make up colour (r,g,b,a)
+		1,							// Attribute 1 (Colour) eg UV, attribute 2
+		4,							// Size: How many floats make up colour (r,g,b,a) eg. if UV, 2 floats
 		GL_FLOAT,					// Type: Our r,g,b,a are float values
 		GL_FALSE,					// Normalized? - not used
 		sizeof(Vertex),				// Stride: Size of entire vertex
-		(void*)(sizeof(float) * 4)	// Offset - Bytes from beginning of the vertex. Position has 4 floats, .: 4 is how many we need to jump over.
+		(void*)(sizeof(float) * 4)	// Offset - Bytes from beginning of the vertex. Position has 4 floats, .: 4 is how many we need to jump over. if writing UV: Pos+ Colour ." offset 8
 	);
 }
