@@ -45,17 +45,22 @@ bool RenderingGeometryApp::startup() {
 	// initialise gizmo primitive counts
 	Gizmos::create(10000, 10000, 10000, 10000);
 
-	// create simple camera transforms
+	// CAMERA
 	m_camera = new Camera();
 	m_camera->SetPosition(glm::vec3(10,10,10));
 	m_camera->Lookat(glm::vec3(0, 0, 0));
 	m_camera->SetProjection(glm::radians(45.0f), (float)getWindowWidth() / (float)getWindowHeight(), 0.1f, 1000.0f);
 
+	// SHADER
+	LoadShader();
+	CreateGeometry();
+
 	return true;
 }
 
 void RenderingGeometryApp::shutdown() {
-
+	DestroyGeometry();
+	UnloadShader();
 	delete m_camera;
 	Gizmos::destroy();
 }
@@ -91,13 +96,32 @@ void RenderingGeometryApp::update(float deltaTime) {
 
 void RenderingGeometryApp::draw() {
 
+	// Camera
 	glm::mat4 projection = m_camera->GetProjection();
 	glm::mat4 view = m_camera->GetView();
 
 	// wipe the screen to the background colour
 	clearScreen();
 
-	// update perspective based on screen size
+	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
+	glUseProgram(m_shader);
+
+	// Step 2: Calculate projection view matrix, pass into shader program
+	glm::mat4 projectionView = projection * view;
+	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
+	
+	// Step 3: Bind VAO
+	glBindVertexArray(m_vao);
+
+	// Step 4:	Draw Elements: GL_TRIANGLES
+	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
+	glDrawElements(GL_TRIANGLES, m_indicesCount, GL_UNSIGNED_BYTE, 0);
+
+	// Step 5: Unbind VAO, cleanup OpenGL
+	glBindVertexArray(0);
+
+	// Step 6: Deactivate Shader program
+	glUseProgram(0);
 	
 	Gizmos::draw(projection * view);
 }
@@ -229,6 +253,87 @@ void RenderingGeometryApp::CreateGeometry()
 
 void RenderingGeometryApp::DestroyGeometry()
 {
+	glDeleteBuffers(1, &m_vbo);
+	glDeleteBuffers(1, &m_ibo);
+	glDeleteVertexArrays(1, &m_vao);
+}
+
+void RenderingGeometryApp::LoadShader()
+{
+	// SHADER: Vertex
+	/*
+	Position:	attribute 0
+	Colour:		attribute 1
+	*/
+	static const char* vertex_shader =
+"#version 400\n \
+in vec4 vPosition;\n \
+in vec4 vColour; \n \
+out vec4 fColour; \n \
+uniform mat4 projectionView; \n \
+void main ()\n \
+{\n \
+	fColour = vColour;\n \
+gl_Position = projectionView * vPosition;\n\
+}";
+	// SHADER: Fragment
+	/*
+	Colour:		final colour: frag colour
+	*/
+	static const char* fragment_shader =
+"#version 400\n \
+in vec4 fColour;\n \
+out vec4 frag_colour;\n \
+void main ()\n \
+{\n \
+	frag_colour = fColour;\n \
+";
+
+	// LOAD GEOMETRY
+	/*
+	STEP 1:
+	Create vertex shader, link to source code, compile it
+	*/
+	// Create: Vertex Shader
+	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vs, 1, &vertex_shader, NULL);
+	glCompileShader(vs);
+
+	/*STEP 2:
+	Create fragment shader, link to source code, compile it */
+	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fs, 1, &fragment_shader, NULL);
+	glCompileShader(fs);
+
+	/* STEP 3:
+	Create Shader Program */
+	m_shader = glCreateProgram();
+
+	/* STEP 4:
+	Attach vs & fs to shader program. */
+	glAttachShader(m_shader, vs);
+	glAttachShader(m_shader, fs);
+
+	/* STEP 5:
+	Describe attribute location of shader elements
+	NOTE: Method: SetupVertexAttribPointers
+	Used to describe verts. */
+	glBindAttribLocation(m_shader, 0, "vPosition");
+	glBindAttribLocation(m_shader, 1, "vColour");
+	// Link: Vert and Frag
+	glLinkProgram(m_shader);
+	m_projectionViewLoc = glGetUniformLocation(m_shader, "projectionView");
+
+	/* STEP 6:
+	Destroy vertex and fragment shaders
+	They are now combined into shaderProgram*/
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+}
+
+void RenderingGeometryApp::UnloadShader()
+{
+	glDeleteProgram(m_shader);
 }
 
 void Vertex::SetupVertexAttribPointers()
@@ -264,7 +369,4 @@ void Vertex::SetupVertexAttribPointers()
 		sizeof(Vertex),				// Stride: Size of entire vertex
 		(void*)(sizeof(float) * 4)	// Offset - Bytes from beginning of the vertex. Position has 4 floats, .: 4 is how many we need to jump over.
 	);
-
-
-
 }

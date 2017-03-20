@@ -29,6 +29,9 @@ public:
 	void CreateGeometry();
 	void DestroyGeometry();
 
+	void LoadShader();
+	void UnloadShader();
+
 protected:
 
 	unsigned int m_vertCount;
@@ -38,6 +41,9 @@ protected:
 	unsigned int m_vao;	// Holds information about Vertex and Binds VBO/IBO
 	unsigned int m_vbo;	// Holds vertices
 	unsigned int m_ibo;	// Holds indices
+
+	unsigned int m_shader;
+	unsigned int m_projectionViewLoc;
 
 	// camera transforms
 	Camera *m_camera;
