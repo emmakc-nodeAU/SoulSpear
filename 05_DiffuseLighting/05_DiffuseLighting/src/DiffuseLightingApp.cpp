@@ -179,11 +179,11 @@ void DiffuseLightingApp::draw() {
 	//glBindVertexArray(0);
 
 	// RENDER CUBE:
-	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 0, 0), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(6, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(8, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_texture);
+	RenderMesh(&m_cube, glm::vec3(-4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 0, 0), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(-2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_texture);
 
 	// RENDER GRID:
 	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
