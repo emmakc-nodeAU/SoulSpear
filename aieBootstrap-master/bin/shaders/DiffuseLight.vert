@@ -18,5 +18,5 @@ void main ()
 	fColour = vColour;
 	fNormal = vNormal;
 	fPos = vPosition.xyz;
-	gl_Position = projectionView * model * vPosition;
+	gl_Position = projectionView * vPosition;
 }
