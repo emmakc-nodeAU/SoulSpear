@@ -129,7 +129,12 @@ void DiffuseLightingApp::draw() {
 	// Step 2: Calculate projection view matrix, pass into shader program
 	glm::mat4 projectionView = projection * view;
 	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
-	
+
+	// Lighting diffuse shader
+	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightAmbientStrength"), 1, &m_ambientStrength);
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightColour"), 1, &m_lightColour[0]); // Light colour
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
+
 	// Texture: CUBE: GPU texture slot zero(0)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
