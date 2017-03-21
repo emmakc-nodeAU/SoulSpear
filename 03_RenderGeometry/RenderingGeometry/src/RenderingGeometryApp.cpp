@@ -314,15 +314,15 @@ void RenderingGeometryApp::CreateGrid()
 	// Create Grid parameters
 	const int xDiv = 10; // m_heightmap->getWidth();	// Heightmap instead of 10;
 	const int yDiv = 10; // m_heightmap->getHeight();	// Heightmap pixels(r,g,b,a)
-	float spacing = 0.1f;
+	float spacing = 1.0f;
 
 	//TODO: algorithm to calculate vertices
 	for (int y = 0; y < yDiv; y++)
 	{
 		for (int x = 0; x < xDiv; x++)
 		{
-			// Access Pixel index value - used to sample pixel
-			unsigned int index = (y * xDiv + x);
+			// HeightMap: Access Pixel index value - used to sample pixel
+			//unsigned int index = (y * xDiv + x);
 
 			// Access Heightmap pixels
 			//const unsigned char *pixels = m_heightmap->getPixels();
