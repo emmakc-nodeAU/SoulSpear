@@ -11,6 +11,8 @@ uniform vec3 lightPos;
 uniform vec3 lightColour;
 uniform float lightAmbientStrength;
 
+uniform vec3 diffuseColour;
+
 void main ()
 {
 	vec3 normal = normalize(fNormal);
@@ -21,5 +23,5 @@ void main ()
 
 	vec3 ambient = lightAmbientStrength * lightColour;
 	
-	frag_colour = vec4((ambient + diffuse), 1.0f) * texture2D(texture, fuv) * fColour;
+	frag_colour = vec4((ambient + diffuse), 1.0f) * texture2D(texture, fuv) * fColour * vec4(diffuseColour, 1.0);
 }

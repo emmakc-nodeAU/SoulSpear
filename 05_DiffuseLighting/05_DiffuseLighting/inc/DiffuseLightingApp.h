@@ -73,6 +73,9 @@ protected:
 	// GRID: TEXTURE
 	aie::Texture *m_texture1;
 
+	// CUBE: TEXTURE
+	aie::Texture *m_whiteTexture;
+
 	// GRID: TEXTURE - HEIGHT MAP
 	//aie::Texture *m_heightmap;
 

@@ -59,6 +59,7 @@ bool DiffuseLightingApp::startup() {
 	// TEXTURE
 	m_texture  = new aie::Texture("./textures/box_512x512.jpg");
 	m_texture1 = new aie::Texture("./textures/grass.png");
+	m_whiteTexture = new aie::Texture("./textures/white.png");
 	//m_heightmap = new aie::Texture("./textures/moss2-heightmap.bmp");
 
 	// SHADER
@@ -73,6 +74,7 @@ bool DiffuseLightingApp::startup() {
 
 void DiffuseLightingApp::shutdown() {
 	
+	delete m_whiteTexture;
 	//delete m_heightmap;
 	delete m_texture1;
 	delete m_texture;
@@ -177,9 +179,12 @@ void DiffuseLightingApp::draw() {
 	//glBindVertexArray(0);
 
 	// RENDER CUBE:
-	RenderMesh(&m_cube, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
-	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
-	RenderMesh(&m_cube, glm::vec3(0, 4, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
+	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 0, 0), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(6, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_whiteTexture);
+	RenderMesh(&m_cube, glm::vec3(8, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_texture);
+
 	// RENDER GRID:
 	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
 
