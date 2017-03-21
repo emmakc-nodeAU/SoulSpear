@@ -89,6 +89,9 @@ void DiffuseLightingApp::update(float deltaTime) {
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
 
+	// LIGHTING - THE BALL REPRESENTING THE LIGHT
+	Gizmos::addSphere(m_lightPosition, 0.1f, 16, 16, glm::vec4(m_lightColour, 1.0f));
+
 	// draw a simple grid with gizmos
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
@@ -374,6 +377,30 @@ void DiffuseLightingApp::CreateGrid()
 		}
 	}
 
+	// LOOP THROUGH INDICIES (face = set of 3) AND THEREFORE FACES
+	for (int i = 0; i < indices.size() / 3; i++)
+	{
+		// FACES OF VERTEX
+		int index0 = indices[i * 3 + 0];
+		int index1 = indices[i * 3 + 1];
+		int index2 = indices[i * 3 + 2];
+
+		//SIDES OF VERTEX
+		glm::vec4 side1 = glm::normalize(verts[index0].position - verts[index1].position);
+		glm::vec4 side2 = glm::normalize(verts[index0].position - verts[index2].position);
+
+		glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(side1), glm::vec3(side2)));
+
+		verts[index0].normal += normal;
+		verts[index1].normal += normal;
+		verts[index2].normal += normal;
+	}
+
+	for (int i = 0; i < verts.size() / 3; i++)
+	{
+		verts[i].normal = glm::normalize(verts[i].normal);
+	}
+
 	/*
 	STEP 3:
 	Check: Sizes of Verts/Indices
@@ -463,10 +490,11 @@ void DiffuseLightingApp::LoadShader()
 
 	// CREATE: Shader
 	m_shaderProgram = new Shader();
-	m_shaderProgram->LoadFile("./shaders/vertex.vert", "./shaders/fragment.frag", [](unsigned int program) {
+	m_shaderProgram->LoadFile("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag", [](unsigned int program) {
 		glBindAttribLocation(program, 0, "vPosition");
 		glBindAttribLocation(program, 1, "vColour");
 		glBindAttribLocation(program, 2, "vUv");
+		glBindAttribLocation(program, 3, "vNormal");
 	}); 
 
 
@@ -525,5 +553,17 @@ void Vertex::SetupVertexAttribPointers()
 		GL_FALSE,					// Normalized? - not used
 		sizeof(Vertex),				// Stride: Size of entire vertex
 		(void*)(sizeof(float) * 8)	// Offset - Bytes from beginning of the vertex(position 4f, colour 4f, uv start = 8)
+	);
+
+	// NORMALS: 
+	// Loading Shader: Normals element is location 3
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(
+		3,							// Attribute 1 (UV)
+		3,							// Size: How many floats make up texture (x,y,z)
+		GL_FLOAT,					// Type: Our u, v are float values
+		GL_FALSE,					// Normalized? - not used
+		sizeof(Vertex),				// Stride: Size of entire vertex
+		(void*)(sizeof(float) * 10)	// Offset - Bytes from beginning of the vertex(position 4f, colour 4f, uv 2f, normals at 10)
 	);
 }
