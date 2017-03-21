@@ -86,10 +86,17 @@ void DiffuseLightingApp::shutdown() {
 
 void DiffuseLightingApp::update(float deltaTime) {
 
+	float time = getTime();
+
 	m_camera->Update(deltaTime);
+
+	// LIGHT: Rotate around x
+	m_lightPosition.x = glm::cos(time) * 5;
+	m_lightPosition.z = glm::sin(time) * 5;	// Combination of sin/cos moves in circle on axis
 
 	// IMGUI Controls
 	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
 
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
