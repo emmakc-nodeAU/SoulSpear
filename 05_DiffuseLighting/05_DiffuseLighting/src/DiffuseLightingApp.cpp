@@ -28,6 +28,8 @@ STEP 4:	Unload Shader and Geometry
 
 #include <gl_core_4_4.h>
 
+#include <imgui.h>
+
 using glm::vec3;
 using glm::vec4;
 using glm::mat4;
@@ -85,6 +87,9 @@ void DiffuseLightingApp::shutdown() {
 void DiffuseLightingApp::update(float deltaTime) {
 
 	m_camera->Update(deltaTime);
+
+	// IMGUI Controls
+	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
 
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
