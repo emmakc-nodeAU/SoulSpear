@@ -62,6 +62,9 @@ protected:
 	// CUBE: TEXTURE
 	aie::Texture *m_texture;
 
+	// GRID: TEXTURE
+	aie::Texture *m_texture1;
+
 	// camera transforms
 	Camera *m_camera;
 

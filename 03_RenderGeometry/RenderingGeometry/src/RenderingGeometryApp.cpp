@@ -55,17 +55,22 @@ bool RenderingGeometryApp::startup() {
 
 	// SHADER
 	LoadShader();
+
+	// GEOMETRY
 	CreateCube();
+	CreateGrid();
 
 	// TEXTURE
-	m_texture = new aie::Texture("./textures/box_512x512.jpg");
+	m_texture  = new aie::Texture("./textures/box_512x512.jpg");
+	m_texture1 = new aie::Texture("./textures/grass.png");
 	return true;
 }
 
 void RenderingGeometryApp::shutdown() {
 	
+	delete m_texture1;
 	delete m_texture;
-
+	DestroyGrid();
 	DestroyCube();
 	UnloadShader();
 
@@ -118,19 +123,26 @@ void RenderingGeometryApp::draw() {
 	glm::mat4 projectionView = projection * view;
 	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
 	
-	// Texture: GPU texture slot zero(0)
+	// Texture: CUBE: GPU texture slot zero(0)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
 	glUniform1i(glGetUniformLocation(m_shader, "texture"), 0);
 
-	// Step 3: CUBE: Bind VAO
+	// Step 3: CUBE: Render and Bind VAO
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(m_cube.vao);
 
 	// Step 4:	CUBE: Draw Elements: GL_TRIANGLES
 	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
 	glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
 
-	// Step 3: GRID: Bind VAO
+	// Texture: GRID: GPU texture slot zero(1)
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture1->getHandle());
+	glUniform1i(glGetUniformLocation(m_shader, "texture"), 0);
+
+	// Step 3: GRID: Render and Bind VAO
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// GL_LINE Wireframe mode, GL_FILL Solid
 	glBindVertexArray(m_grid.vao);
 
 	// Step 4:	GRID: Draw Elements: GL_TRIANGLES
@@ -283,8 +295,7 @@ void RenderingGeometryApp::CreateGrid()
 {
 	/*
 	STEP 1:
-	Specify position, colour for each vert of a cube
-	Example: Each face does not shar ea vert, 4 verts per face of cube
+	Specify position, colour for each vert of a grid
 	*/
 
 	glm::vec4 white(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
@@ -297,19 +308,64 @@ void RenderingGeometryApp::CreateGrid()
 
 	std::vector<Vertex> verts;
 
-	//TODO: algorithm to calculatevertices
+	// Create Grid parameters
+	const int xDiv = 10;
+	const int yDiv = 10;
+	float spacing = 1;
 
+	//TODO: algorithm to calculate vertices
+	for (int y = 0; y < yDiv; y++)
+	{
+		for (int x = 0; x < xDiv; x++)
+		{
+			// GRID plane going into the screen .: z & y inverted
+			Vertex v;
+			v.position.x = (x * spacing) - ((xDiv - 1) * spacing * 0.5f);
+			v.position.z = (y * spacing) - ((yDiv - 1) * spacing * 0.5f);
+			v.position.y = 0;
+			v.position.w = 1.0f;
+
+			// Calculate Colour
+			v.colour = glm::vec4(1, 1, 1, 1);
+
+			// Calculate UV coords - as a percentage
+			v.uv = glm::vec2(x / (float)(xDiv - 1), y / (float)(yDiv -1) );
+
+			verts.push_back(v);
+		}
+	}
 	
 	/*
 	STEP 2:
-	Describing Cube structure: using above Verts array, construct triangles for OpenGL to render
-	Render Order: Each triangle to be described in clockwise order, to set correct facing direction per triangle
-	OpenGL defaults to cull pixels that are 'facing away' from camera glCullMode(GL_BACK) is default setting.
-	Culling can be changed to GL_FRONT or GL_FRONT_AND_BACK, or enabled/disabled via glEnable(GL_CULL_FACE) / glDisable(GL_CULL_FACE)
-	*/
+	Describing Grid structure: */
 	std::vector<unsigned short> indices;
 
 	// TODO: algorithm to calc faces
+	// Grid of 5 verts going across, 2 down - Triangulate each square w.2 tri's.
+	//	.	.	.	.	.
+	//	.	.	.	.	.	=> Each vert has index value and position
+	//	.	.	.	.	.
+	// (0,0)
+	for (int y = 0; y < yDiv - 1; y++)
+	{
+		for (int x = 0; x < xDiv - 1; x++)
+		{
+			// Loop each vert, bottom left i0 = x * xiv + x
+			// Triangulate across to x2 Shift right -->  , then up, then across.
+			unsigned short i0 = y * xDiv + x;
+			unsigned short i1 = y * xDiv + (x + 1);
+			unsigned short i2 = (y + 1) * xDiv + (x + 1);
+			unsigned short i3 = (y + 1) * xDiv + x;
+
+			indices.push_back(i0);
+			indices.push_back(i2);
+			indices.push_back(i1);
+
+			indices.push_back(i0);
+			indices.push_back(i3);
+			indices.push_back(i2);
+		}
+	}
 
 	/*
 	STEP 3:
@@ -320,8 +376,8 @@ void RenderingGeometryApp::CreateGrid()
 	Calculate number of verts/indices by dividing
 	*/
 	// CHECK SIZE of DYNAMIC ARRAY
-	m_grid.vertCount = sizeof(verts) / sizeof(Vertex);
-	m_grid.indicesCount = sizeof(indices) / sizeof(unsigned char);
+	m_grid.vertCount = verts.size();
+	m_grid.indicesCount = indices.size();
 
 	/* STEP 4:
 	Generate: VAO and Bind it */
