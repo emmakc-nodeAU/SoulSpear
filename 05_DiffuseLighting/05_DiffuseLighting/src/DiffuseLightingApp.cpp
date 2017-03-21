@@ -260,6 +260,31 @@ void DiffuseLightingApp::CreateCube()
 	m_cube.vertCount = sizeof(verts) / sizeof(Vertex);
 	m_cube.indicesCount = sizeof(indices) / sizeof(unsigned char);
 
+	// LIGHTING: LOOP THROUGH INDICIES (face = set of 3) AND THEREFORE FACES
+	for (int i = 0; i < m_cube.indicesCount / 3; i++)
+	{
+		// FACES OF VERTEX
+		int index0 = indices[i * 3 + 0];
+		int index1 = indices[i * 3 + 1];
+		int index2 = indices[i * 3 + 2];
+
+		//SIDES OF VERTEX
+		glm::vec4 side1 = glm::normalize(verts[index0].position - verts[index1].position);
+		glm::vec4 side2 = glm::normalize(verts[index0].position - verts[index2].position);
+
+		glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(side1), glm::vec3(side2)));
+
+		verts[index0].normal += normal;
+		verts[index1].normal += normal;
+		verts[index2].normal += normal;
+	}
+
+	for (int i = 0; i < m_cube.vertCount; i++)
+	{
+		verts[i].normal = glm::normalize(verts[i].normal);
+	}
+
+
 	/* STEP 4:
 	Generate: VAO and Bind it */
 	glGenVertexArrays(1, &m_cube.vao);
