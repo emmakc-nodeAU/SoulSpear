@@ -14,7 +14,7 @@ uniform float lightAmbientStrength;
 void main ()
 {
 	vec3 normal = normalize(fNormal);
-	vec3 lightDir = normalize(lightPos - fPos);
+	vec3 lightDir = normalize(fPos - lightPos);
 
 	float diff = max(dot(normal, -lightDir), 0.0);
 	vec3 diffuse = lightColour * diff;
