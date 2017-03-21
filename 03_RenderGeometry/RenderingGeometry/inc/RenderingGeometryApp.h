@@ -65,6 +65,9 @@ protected:
 	// GRID: TEXTURE
 	aie::Texture *m_texture1;
 
+	// GRID: TEXTURE - HEIGHT MAP
+	//aie::Texture *m_heightmap;
+
 	// camera transforms
 	Camera *m_camera;
 

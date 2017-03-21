@@ -53,6 +53,11 @@ bool RenderingGeometryApp::startup() {
 	m_camera->Lookat(glm::vec3(0, 0, 0));
 	m_camera->SetProjection(glm::radians(45.0f), (float)getWindowWidth() / (float)getWindowHeight(), 0.1f, 1000.0f);
 
+	// TEXTURE
+	m_texture  = new aie::Texture("./textures/box_512x512.jpg");
+	m_texture1 = new aie::Texture("./textures/grass.png");
+	//m_heightmap = new aie::Texture("./textures/moss2-heightmap.bmp");
+
 	// SHADER
 	LoadShader();
 
@@ -60,14 +65,12 @@ bool RenderingGeometryApp::startup() {
 	CreateCube();
 	CreateGrid();
 
-	// TEXTURE
-	m_texture  = new aie::Texture("./textures/box_512x512.jpg");
-	m_texture1 = new aie::Texture("./textures/grass.png");
 	return true;
 }
 
 void RenderingGeometryApp::shutdown() {
 	
+	//delete m_heightmap;
 	delete m_texture1;
 	delete m_texture;
 	DestroyGrid();
@@ -136,7 +139,7 @@ void RenderingGeometryApp::draw() {
 	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
 	glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
 
-	// Texture: GRID: GPU texture slot zero(1)
+	// Texture: GRID: GPU texture slot zero(0)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture1->getHandle());
 	glUniform1i(glGetUniformLocation(m_shader, "texture"), 0);
@@ -177,10 +180,10 @@ void RenderingGeometryApp::CreateCube()
 	Vertex verts[] = {
 															// {POSITION} , {COLOUR}
 															// FRONT FACE	- WHITE
-	{ {-0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 0.0f }},		// 0 base left
-	{ { 0.5f,-0.5f, 0.5f, 1.0f },white, { 1.0f, 0.0f }},		// 1 top left
-	{ { 0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f }},		// 2 top right
-	{ {-0.5f, 0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f }},		// 3 base right
+	{ { -0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 0 base left
+	{ {  0.5f,-0.5f, 0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 1 top left
+	{ {  0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 2 top right
+	{ { -0.5f, 0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 3 base right
 
 															// BACK FACE	- WHITE
 	{ { -0.5f,-0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 4 
@@ -299,37 +302,40 @@ void RenderingGeometryApp::CreateGrid()
 	*/
 
 	glm::vec4 white(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
-	glm::vec4 red(1.0f, 0.0f, 0.0f, 1.0f);	// Defined colour variable "Red"
-	glm::vec4 yellow(1.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Yellow"
-	glm::vec4 green(0.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Green"
-	glm::vec4 cyan(0.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "Cyan"
-	glm::vec4 blue(0.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Blue"
-	glm::vec4 magenta(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
+	//glm::vec4 red(1.0f, 0.0f, 0.0f, 1.0f);	// Defined colour variable "Red"
+	//glm::vec4 yellow(1.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Yellow"
+	//glm::vec4 green(0.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Green"
+	//glm::vec4 cyan(0.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "Cyan"
+	//glm::vec4 blue(0.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Blue"
+	//glm::vec4 magenta(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
 
 	std::vector<Vertex> verts;
 
 	// Create Grid parameters
-	const int xDiv = 10;
-	const int yDiv = 10;
-	float spacing = 1;
+	const int xDiv = 10; // m_heightmap->getWidth();	// Heightmap instead of 10;
+	const int yDiv = 10; // m_heightmap->getHeight();	// Heightmap pixels(r,g,b,a)
+	float spacing = 0.1f;
 
 	//TODO: algorithm to calculate vertices
 	for (int y = 0; y < yDiv; y++)
 	{
 		for (int x = 0; x < xDiv; x++)
 		{
+			// Access Pixel index value - used to sample pixel
+			unsigned int index = (y * xDiv + x);
+
+			// Access Heightmap pixels
+			//const unsigned char *pixels = m_heightmap->getPixels();
+			//float yPos = (pixels[index * 3] / 255.0f) * 2.0f - 1.0f;	// 3=red pixel bitmap image, 255=red, if blue [index*3+1]. green +2..
+
 			// GRID plane going into the screen .: z & y inverted
 			Vertex v;
 			v.position.x = (x * spacing) - ((xDiv - 1) * spacing * 0.5f);
 			v.position.z = (y * spacing) - ((yDiv - 1) * spacing * 0.5f);
-			v.position.y = 0;
+			v.position.y = 0; // yPos; // heightmap
 			v.position.w = 1.0f;
-
-			// Calculate Colour
-			v.colour = glm::vec4(1, 1, 1, 1);
-
-			// Calculate UV coords - as a percentage
-			v.uv = glm::vec2(x / (float)(xDiv - 1), y / (float)(yDiv -1) );
+			v.colour = glm::vec4(1, 1, 1, 1); // Calculate Colour
+			v.uv = glm::vec2(x / (float)(xDiv-1), y / (float)(yDiv-1)); // Calculate UV coords - as a percentage
 
 			verts.push_back(v);
 		}
