@@ -148,39 +148,75 @@ void DiffuseLightingApp::draw() {
 	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
 
 	// Texture: CUBE: GPU texture slot zero(0)
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
-	glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
+	//glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
 
 	// Step 3: CUBE: Render and Bind VAO
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBindVertexArray(m_cube.vao);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glBindVertexArray(m_cube.vao);
 
 	// Step 4:	CUBE: Draw Elements: GL_TRIANGLES
 	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
-	glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
+	//glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
 
 	// Texture: GRID: GPU texture slot zero(0)
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture1->getHandle());
-	glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, m_texture1->getHandle());
+	//glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
 
 	// Step 3: GRID: Render and Bind VAO
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// GL_LINE Wireframe mode, GL_FILL Solid
-	glBindVertexArray(m_grid.vao);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// GL_LINE Wireframe mode, GL_FILL Solid
+	//glBindVertexArray(m_grid.vao);
 
 	// Step 4:	GRID: Draw Elements: GL_TRIANGLES
-	glDrawElements(GL_TRIANGLES, m_grid.indicesCount, GL_UNSIGNED_SHORT, 0);
+	//glDrawElements(GL_TRIANGLES, m_grid.indicesCount, GL_UNSIGNED_SHORT, 0);
 
 
 	// Step 5: Unbind VAO, cleanup OpenGL
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
+
+	// RENDER CUBE:
+	RenderMesh(&m_cube, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
+	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
+	RenderMesh(&m_cube, glm::vec3(0, 4, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
+	// RENDER GRID:
+	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
 
 	// Step 6: Deactivate Shader program
 	m_shaderProgram->Disable(); // glUseProgram(0);
 	
 	Gizmos::draw(projection * view);
 }
+
+
+void DiffuseLightingApp::RenderMesh(GLMesh *mesh, glm::vec3 &position, glm::vec3 &scale, glm::vec3 materialColour, aie::Texture *diffuseTexture)
+{
+	glm::mat4 model(
+		scale.x, 0, 0, 0,
+		0, scale.y, 0, 0,
+		0, 0, scale.z, 0,
+		position.x, position.y, position.z, 1
+	);
+
+	// Sends Model Matrix
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "model"), 1, false, &model[0][0]);
+
+	// Sends Colour
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "diffuseColour"), 1, &materialColour[0]);
+
+	// Texture: GPU texture slot zero(0)
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseTexture->getHandle());
+	glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
+
+	// Step 3: Render and Bind VAO mesh
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindVertexArray(mesh->vao);
+	glDrawElements(GL_TRIANGLES, mesh->indicesCount, mesh->indicesSizeType, 0);
+	glBindVertexArray(0);
+}
+
 
 void DiffuseLightingApp::CreateCube()
 {
@@ -296,6 +332,7 @@ void DiffuseLightingApp::CreateCube()
 		verts[i].normal = glm::normalize(verts[i].normal);
 	}
 
+	m_cube.indicesSizeType = GL_UNSIGNED_BYTE;
 
 	/* STEP 4:
 	Generate: VAO and Bind it */
@@ -454,6 +491,8 @@ void DiffuseLightingApp::CreateGrid()
 	// CHECK SIZE of DYNAMIC ARRAY
 	m_grid.vertCount = verts.size();
 	m_grid.indicesCount = indices.size();
+
+	m_grid.indicesSizeType = GL_UNSIGNED_SHORT;
 
 	/* STEP 4:
 	Generate: VAO and Bind it */

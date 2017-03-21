@@ -28,6 +28,8 @@ struct GLMesh
 	unsigned int vertCount;
 	unsigned int indicesCount;
 
+	unsigned int indicesSizeType;
+
 	unsigned int vao;	// Holds information about Vertex and Binds VBO/IBO
 	unsigned int vbo;	// Holds vertices
 	unsigned int ibo;	// Holds indices
@@ -44,6 +46,8 @@ public:
 
 	virtual void update(float deltaTime);
 	virtual void draw();
+
+	void RenderMesh(GLMesh *mesh, glm::vec3 &position, glm::vec3 &scale, glm::vec3 materialsColour, aie::Texture *diffuseTexture);
 
 	void CreateCube();
 	void DestroyCube();

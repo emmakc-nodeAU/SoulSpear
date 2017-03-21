@@ -11,12 +11,13 @@ out vec3 fNormal;
 out vec3 fPos;
 
 uniform mat4 projectionView;
+uniform mat4 model;
 
 void main ()
 {
 	fuv = vUv;
 	fColour = vColour;
 	fNormal = vNormal;
-	fPos = vPosition.xyz;
-	gl_Position = projectionView * vPosition;
+	fPos = (model * vPosition).xyz;
+	gl_Position = projectionView * model * vPosition;
 }
