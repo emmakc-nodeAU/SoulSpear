@@ -138,10 +138,12 @@ glm::mat4& Camera::GetProjection()
 
 void Camera::Lookat(glm::vec3 target)
 {
+	//m_viewMatrix = glm::lookAt(m_cameraPosition, target, glm::vec3(0, 1, 0));
+
 	// Target position - calculate camera direction
 	glm::vec3 dir = glm::normalize(target - m_cameraPosition);
 	m_cameraPitch = glm::degrees(glm::asin(dir.y));
 	m_cameraYaw = glm::degrees(atan2(dir.y, dir.x));
-
+	
 	CalculateFront();
 }

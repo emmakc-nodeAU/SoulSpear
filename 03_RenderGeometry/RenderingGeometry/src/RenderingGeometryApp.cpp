@@ -21,6 +21,8 @@ STEP 4:	Unload Shader and Geometry
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <Texture.h>
+
 #include "Camera.h"
 
 #include <gl_core_4_4.h>
@@ -53,14 +55,18 @@ bool RenderingGeometryApp::startup() {
 
 	// SHADER
 	LoadShader();
-	CreateGeometry();
+	CreateCube();
 
+	// TEXTURE
+	m_texture = new aie::Texture("./textures/box_512x512.jpg");
 	return true;
 }
 
 void RenderingGeometryApp::shutdown() {
 	
-	DestroyGeometry();
+	delete m_texture;
+
+	DestroyCube();
 	UnloadShader();
 
 	delete m_camera;
@@ -112,12 +118,24 @@ void RenderingGeometryApp::draw() {
 	glm::mat4 projectionView = projection * view;
 	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
 	
-	// Step 3: Bind VAO
-	glBindVertexArray(m_vao);
+	// Texture: GPU texture slot zero(0)
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
+	glUniform1i(glGetUniformLocation(m_shader, "texture"), 0);
 
-	// Step 4:	Draw Elements: GL_TRIANGLES
+	// Step 3: CUBE: Bind VAO
+	glBindVertexArray(m_cube.vao);
+
+	// Step 4:	CUBE: Draw Elements: GL_TRIANGLES
 	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
-	glDrawElements(GL_TRIANGLES, m_indicesCount, GL_UNSIGNED_BYTE, 0);
+	glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
+
+	// Step 3: GRID: Bind VAO
+	glBindVertexArray(m_grid.vao);
+
+	// Step 4:	GRID: Draw Elements: GL_TRIANGLES
+	glDrawElements(GL_TRIANGLES, m_grid.indicesCount, GL_UNSIGNED_SHORT, 0);
+
 
 	// Step 5: Unbind VAO, cleanup OpenGL
 	glBindVertexArray(0);
@@ -128,50 +146,59 @@ void RenderingGeometryApp::draw() {
 	Gizmos::draw(projection * view);
 }
 
-void RenderingGeometryApp::CreateGeometry()
+void RenderingGeometryApp::CreateCube()
 {
 	/*
 	STEP 1: 
 	Specify position, colour for each vert of a cube
 	Example: Each face does not shar ea vert, 4 verts per face of cube
 	*/
+	
+	glm::vec4 white		(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
+	glm::vec4 red		(1.0f, 0.0f, 0.0f, 1.0f);	// Defined colour variable "Red"
+	glm::vec4 yellow	(1.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Yellow"
+	glm::vec4 green		(0.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Green"
+	glm::vec4 cyan		(0.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "Cyan"
+	glm::vec4 blue		(0.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Blue"
+	glm::vec4 magenta	(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
+	
 	Vertex verts[] = {
 															// {POSITION} , {COLOUR}
-															// FRONT FACE	- RED
-	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 0
-	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 1
-	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 2
-	{ {-0.5f, 0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 0.0f, 0.5f } },	// 3
+															// FRONT FACE	- WHITE
+	{ {-0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 0.0f }},		// 0 base left
+	{ { 0.5f,-0.5f, 0.5f, 1.0f },white, { 1.0f, 0.0f }},		// 1 top left
+	{ { 0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f }},		// 2 top right
+	{ {-0.5f, 0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f }},		// 3 base right
 
-															// BACK FACE	- YELLOW
-	{ { -0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 1.0f, 0.0f, 0.5f } },	// 4
-	{ {  0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 1.0f, 0.0f, 0.5f } },	// 5
-	{ {  0.5f, 0.5f,-0.5f, 1.0f },{ 1.0f, 1.0f, 0.0f, 0.5f } },	// 6
-	{ { -0.5f, 0.5f,-0.5f, 1.0f },{ 1.0f, 1.0f, 0.0f, 0.5f } },	// 7
+															// BACK FACE	- WHITE
+	{ { -0.5f,-0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 4 
+	{ {  0.5f,-0.5f,-0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 5
+	{ {  0.5f, 0.5f,-0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 6
+	{ { -0.5f, 0.5f,-0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 7
 
-															// LEFT FACE	- GREEN
-	{ { -0.5f,-0.5f,-0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 8
-	{ { -0.5f,-0.5f, 0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 9
-	{ { -0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 10
-	{ { -0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 11
+															// LEFT FACE	- WHITE
+	{ { -0.5f,-0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 8
+	{ { -0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 9
+	{ { -0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 10
+	{ { -0.5f, 0.5f,-0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 11
 
-															// RIGHT FACE	- CYAN
-	{ { 0.5f,-0.5f,-0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 12
-	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 13
-	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 14
-	{ { 0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 1.0f, 0.0f, 0.5f } },	// 15
+															// RIGHT FACE	- WHITE
+	{ { 0.5f,-0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 12
+	{ { 0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 13
+	{ { 0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 14
+	{ { 0.5f, 0.5f,-0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 15
 
-															// TOP FACE		- BLUE
-	{ {-0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 16
-	{ {-0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 17
-	{ { 0.5f, 0.5f, 0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 18
-	{ { 0.5f, 0.5f,-0.5f, 1.0f },{ 0.0f, 0.0f, 1.0f, 0.5f } },	// 19
+															// TOP FACE		- WHITE
+	{ {-0.5f, 0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 16
+	{ {-0.5f, 0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 17
+	{ { 0.5f, 0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 18
+	{ { 0.5f, 0.5f,-0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 19
 
-															// BOTTOM FACE	- MAGENTA
-	{ {-0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 20
-	{ {-0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 21
-	{ { 0.5f,-0.5f, 0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } },	// 22
-	{ { 0.5f,-0.5f,-0.5f, 1.0f },{ 1.0f, 0.0f, 1.0f, 0.5f } }	// 23
+															// BOTTOM FACE	- WHITE
+	{ {-0.5f,-0.5f,-0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 20
+	{ {-0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 1.0f } },	// 21
+	{ { 0.5f,-0.5f, 0.5f, 1.0f },white, { 1.0f, 1.0f } },	// 22
+	{ { 0.5f,-0.5f,-0.5f, 1.0f },white, { 1.0f, 0.0f } }	// 23
 	};
 	/*
 	STEP 2:
@@ -206,13 +233,13 @@ void RenderingGeometryApp::CreateGeometry()
 	Calculate number of verts/indices by dividing
 	*/
 	// CHECK SIZE of DYNAMIC ARRAY
-	m_vertCount = sizeof(verts) / sizeof(Vertex);
-	m_indicesCount = sizeof(indices) / sizeof(unsigned char);
+	m_cube.vertCount = sizeof(verts) / sizeof(Vertex);
+	m_cube.indicesCount = sizeof(indices) / sizeof(unsigned char);
 
 	/* STEP 4:
 	Generate: VAO and Bind it */
-	glGenVertexArrays(1, &m_vao);
-	glBindVertexArray(m_vao);
+	glGenVertexArrays(1, &m_cube.vao);
+	glBindVertexArray(m_cube.vao);
 
 	/* STEP 5:
 	Create VBO and IBO
@@ -222,11 +249,11 @@ void RenderingGeometryApp::CreateGeometry()
 	Fill buffers with generated data
 	Sends Verts and Indices from CPU to GPU */
 	// Generate
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ibo);
+	glGenBuffers(1, &m_cube.vbo);
+	glGenBuffers(1, &m_cube.ibo);
 	// Bind
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_cube.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_cube.ibo);
 	// FILL BUFFERS with data size, pointer to first item in memory
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -245,11 +272,98 @@ void RenderingGeometryApp::CreateGeometry()
 
 }
 
-void RenderingGeometryApp::DestroyGeometry()
+void RenderingGeometryApp::DestroyCube()
 {
-	glDeleteBuffers(1, &m_vbo);
-	glDeleteBuffers(1, &m_ibo);
-	glDeleteVertexArrays(1, &m_vao);
+	glDeleteBuffers(1, &m_cube.vbo);
+	glDeleteBuffers(1, &m_cube.ibo);
+	glDeleteVertexArrays(1, &m_cube.vao);
+}
+
+void RenderingGeometryApp::CreateGrid()
+{
+	/*
+	STEP 1:
+	Specify position, colour for each vert of a cube
+	Example: Each face does not shar ea vert, 4 verts per face of cube
+	*/
+
+	glm::vec4 white(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
+	glm::vec4 red(1.0f, 0.0f, 0.0f, 1.0f);	// Defined colour variable "Red"
+	glm::vec4 yellow(1.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Yellow"
+	glm::vec4 green(0.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Green"
+	glm::vec4 cyan(0.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "Cyan"
+	glm::vec4 blue(0.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Blue"
+	glm::vec4 magenta(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
+
+	std::vector<Vertex> verts;
+
+	//TODO: algorithm to calculatevertices
+
+	
+	/*
+	STEP 2:
+	Describing Cube structure: using above Verts array, construct triangles for OpenGL to render
+	Render Order: Each triangle to be described in clockwise order, to set correct facing direction per triangle
+	OpenGL defaults to cull pixels that are 'facing away' from camera glCullMode(GL_BACK) is default setting.
+	Culling can be changed to GL_FRONT or GL_FRONT_AND_BACK, or enabled/disabled via glEnable(GL_CULL_FACE) / glDisable(GL_CULL_FACE)
+	*/
+	std::vector<unsigned short> indices;
+
+	// TODO: algorithm to calc faces
+
+	/*
+	STEP 3:
+	Check: Sizes of Verts/Indices
+	Drawing: glDrawElements method requires Indices number
+	sizeof(verts) returns entire size in byes of array
+	sizeof(Vertex) returns size of single vertes
+	Calculate number of verts/indices by dividing
+	*/
+	// CHECK SIZE of DYNAMIC ARRAY
+	m_grid.vertCount = sizeof(verts) / sizeof(Vertex);
+	m_grid.indicesCount = sizeof(indices) / sizeof(unsigned char);
+
+	/* STEP 4:
+	Generate: VAO and Bind it */
+	glGenVertexArrays(1, &m_grid.vao);
+	glBindVertexArray(m_grid.vao);
+
+	/* STEP 5:
+	Create VBO and IBO
+	Tell OpenGL Buffer Type and use
+	VBO: Buffer in graphics memory to contain vertices
+	IBO: Buffer in graphics memory to contain indices
+	Fill buffers with generated data
+	Sends Verts and Indices from CPU to GPU */
+	// Generate
+	glGenBuffers(1, &m_grid.vbo);
+	glGenBuffers(1, &m_grid.ibo);
+	// Bind
+	glBindBuffer(GL_ARRAY_BUFFER, m_grid.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_grid.ibo);
+	// FILL BUFFERS with data size, pointer to first item in memory
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * verts.size(), &verts[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), &indices[0], GL_STATIC_DRAW);
+
+	/* STEP 6:
+	Describe Vertices shape
+	Example: Each vertex holds a position and colour
+	Shape of vertex descibed to OpenGL - send to shader, and mapped to location */
+	Vertex::SetupVertexAttribPointers();
+
+	/* STEP 7:
+	Unbind Buffers - pass in 0 */
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+}
+
+void RenderingGeometryApp::DestroyGrid()
+{
+	glDeleteBuffers(1, &m_grid.vbo);
+	glDeleteBuffers(1, &m_grid.ibo);
+	glDeleteVertexArrays(1, &m_grid.vao);
 }
 
 void RenderingGeometryApp::LoadShader()
@@ -258,25 +372,31 @@ void RenderingGeometryApp::LoadShader()
 	/*	Position:	attribute 0
 		Colour:		attribute 1 */
 	static const char* vertex_shader =
-"#version 400\n \
-in vec4 vPosition;\n \
-in vec4 vColour;\n \
-out vec4 fColour;\n \
-uniform mat4 projectionView;\n \
-void main ()\n \
-{\n \
-	fColour = vColour;\n \
-	gl_Position = projectionView * vPosition;\n\
-}";
+		"#version 410\n \
+						in vec4 vPosition;\n \
+						in vec4 vColour;\n \
+						in vec2 vUv; \n \
+						out vec4 fColour;\n \
+						out vec2 fuv; \n \
+						uniform mat4 projectionView;\n \
+						void main ()\n \
+						{\n \
+							fuv = vUv; \n\
+							fColour = vColour; \n\
+							gl_Position = projectionView * vPosition; \n\ }";
+
 	// SHADER: Fragment
 	static const char* fragment_shader =
-"#version 400\n \
-in vec4 fColour;\n \
-out vec4 frag_colour;\n \
-void main ()\n \
-{\n \
-	frag_colour = fColour;\n \
-";
+		"#version 410\n \
+						in vec4 fColour;\n \
+						in vec2 fuv; \n \
+						out vec4 frag_colour;\n \
+						uniform sampler2D texture; \n\
+						void main ()\n \
+						{\n \
+							frag_colour = texture2D(texture, fuv) * fColour;\n \
+						}" ;
+	int success = GL_FALSE;	// Error checking 
 
 	// LOAD GEOMETRY
 	/* STEP 1:
@@ -307,9 +427,23 @@ void main ()\n \
 	Used to describe verts. */
 	glBindAttribLocation(m_shader, 0, "vPosition");
 	glBindAttribLocation(m_shader, 1, "vColour");
+	glBindAttribLocation(m_shader, 2, "vUv");
 	// Link: Vert and Frag
 	glLinkProgram(m_shader);
 	m_projectionViewLoc = glGetUniformLocation(m_shader, "projectionView");
+
+	// ERROR HELPER
+	glGetProgramiv(m_shader, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE) {
+		int infoLogLength = 0;
+		glGetProgramiv(m_shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+		char* infolog = new char[infoLogLength];
+
+		glGetProgramInfoLog(m_shader, infoLogLength, 0, infolog);
+		printf("Error: Failed to link shader program!\n");
+		printf("%s\n", infolog);
+		delete[] infolog;
+	}
 
 	/* STEP 6:
 	Destroy vertex and fragment shaders
@@ -354,6 +488,18 @@ void Vertex::SetupVertexAttribPointers()
 		GL_FLOAT,					// Type: Our r,g,b,a are float values
 		GL_FALSE,					// Normalized? - not used
 		sizeof(Vertex),				// Stride: Size of entire vertex
-		(void*)(sizeof(float) * 4)	// Offset - Bytes from beginning of the vertex. Position has 4 floats, .: 4 is how many we need to jump over. if writing UV: Pos+ Colour ." offset 8
+		(void*)(sizeof(float) * 4)	// Offset - Bytes from beginning of the vertex. Position has 4 floats, .: 4 is how many we need to jump over
+	);
+
+	// UV: Enable texture element
+	// Loading Shader: UV element is location 2
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(
+		2,							// Attribute 1 (UV)
+		2,							// Size: How many floats make up texture (u,v)
+		GL_FLOAT,					// Type: Our u, v are float values
+		GL_FALSE,					// Normalized? - not used
+		sizeof(Vertex),				// Stride: Size of entire vertex
+		(void*)(sizeof(float) * 8)	// Offset - Bytes from beginning of the vertex(position 4f, colour 4f, uv start = 8)
 	);
 }
