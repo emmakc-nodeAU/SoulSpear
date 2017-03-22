@@ -45,23 +45,23 @@ DiffuseLightingApp::~DiffuseLightingApp() {
 
 bool DiffuseLightingApp::startup() {
 	
-	setBackgroundColour(0.25f, 0.25f, 0.25f);
+	setBackgroundColour(0.25f, 0.25f, 0.25f);		// Grey world space
 
 	// initialise gizmo primitive counts
 	Gizmos::create(10000, 10000, 10000, 10000);
 
 	// CAMERA
 	m_camera = new Camera();
-	m_camera->SetPosition(glm::vec3(10,10,10));
+	m_camera->SetPosition(glm::vec3(10,30,0));	// Camera based here
 	m_camera->Lookat(glm::vec3(0, 0, 0));
-	m_camera->SetProjection(glm::radians(45.0f), (float)getWindowWidth() / (float)getWindowHeight(), 0.1f, 1000.0f);
+	m_camera->SetProjection(glm::radians(45.0f), (float)getWindowWidth() / (float)getWindowHeight(), 0.1f, 1000.0f);  
 
-	// TEXTURE
-	m_texture  = new aie::Texture("./textures/box_512x512.jpg");
-	m_texture1 = new aie::Texture("./textures/grass.png");
+	// GRID
+	m_texture = new aie::Texture("./textures/grass.png");
+
+	// CUBE
 	m_whiteTexture = new aie::Texture("./textures/white.png");
-	//m_heightmap = new aie::Texture("./textures/moss2-heightmap.bmp");
-
+	
 	// SHADER
 	LoadShader();
 
@@ -75,9 +75,8 @@ bool DiffuseLightingApp::startup() {
 void DiffuseLightingApp::shutdown() {
 	
 	delete m_whiteTexture;
-	//delete m_heightmap;
-	delete m_texture1;
 	delete m_texture;
+
 	DestroyGrid();
 	DestroyCube();
 	UnloadShader();
@@ -89,12 +88,11 @@ void DiffuseLightingApp::shutdown() {
 void DiffuseLightingApp::update(float deltaTime) {
 
 	float time = getTime();
-
 	m_camera->Update(deltaTime);
 
-	// LIGHT: Rotate around x
+	// LIGHT: Orbits around x
 	m_lightPosition.x = glm::cos(time) * 5;
-	m_lightPosition.z = glm::sin(time) * 5;	// Combination of sin/cos moves in circle on axis
+	m_lightPosition.z = glm::sin(time) * 5;
 
 	// IMGUI Controls
 	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
@@ -103,10 +101,14 @@ void DiffuseLightingApp::update(float deltaTime) {
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
 
-	// LIGHTING - THE BALL REPRESENTING THE LIGHT
+	// LIGHTING - THE BALL REPRESENTS THE LIGHT
+		//	position: m_skyboxPosition
+		//	radius	: 0.1f
+		//	size:	16 x 16
+		//	fill colour: m_lightColour cast vec4, vec3+, 1 for transparency
 	Gizmos::addSphere(m_lightPosition, 0.1f, 16, 16, glm::vec4(m_lightColour, 1.0f));
 
-	// draw a simple grid with gizmos
+	// GRID: Structure with gizmos
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
 	for (int i = 0; i < 21; ++i) {
@@ -117,19 +119,16 @@ void DiffuseLightingApp::update(float deltaTime) {
 						vec3(-10, 0, -10 + i),
 						i == 10 ? white : black);
 	}
-
 	// add a transform so that we can see the axis
 	Gizmos::addTransform(mat4(1));
 
 	// quit if we press escape
 	aie::Input* input = aie::Input::getInstance();
-
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
 
 void DiffuseLightingApp::draw() {
-
 	// Camera
 	glm::mat4 projection = m_camera->GetProjection();
 	glm::mat4 view = m_camera->GetView();
@@ -149,44 +148,17 @@ void DiffuseLightingApp::draw() {
 	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightColour"), 1, &m_lightColour[0]); // Light colour
 	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
 
-	// Texture: CUBE: GPU texture slot zero(0)
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, m_texture->getHandle());
-	//glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
-
-	// Step 3: CUBE: Render and Bind VAO
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glBindVertexArray(m_cube.vao);
-
-	// Step 4:	CUBE: Draw Elements: GL_TRIANGLES
-	//			Tell OpenGL number and size of Indices (each a 1 byte unsigned char)
-	//glDrawElements(GL_TRIANGLES, m_cube.indicesCount, GL_UNSIGNED_BYTE, 0);
-
-	// Texture: GRID: GPU texture slot zero(0)
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, m_texture1->getHandle());
-	//glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
-
-	// Step 3: GRID: Render and Bind VAO
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	// GL_LINE Wireframe mode, GL_FILL Solid
-	//glBindVertexArray(m_grid.vao);
-
-	// Step 4:	GRID: Draw Elements: GL_TRIANGLES
-	//glDrawElements(GL_TRIANGLES, m_grid.indicesCount, GL_UNSIGNED_SHORT, 0);
-
-
-	// Step 5: Unbind VAO, cleanup OpenGL
-	//glBindVertexArray(0);
-
 	// RENDER CUBE:
-	RenderMesh(&m_cube, glm::vec3(-4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 0, 0), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(-2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 1, 0), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(0, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, 1), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_whiteTexture);
-	RenderMesh(&m_cube, glm::vec3(4, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_texture);
+	// Position |  ?  | Colour | Texture
+	RenderMesh(&m_cube, glm::vec3(-4, 2, 6), glm::vec3(1, 1, 1), glm::vec3(2, 0, 2), m_whiteTexture);		// SCREEN	- LHS
+	RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);		// SCREEN	- RHS
+	RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);		// PLATFORM - LHS
+	RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);		// PLATFORM - RHS
+	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_whiteTexture);	// PLATFORM - CENTRE
 
 	// RENDER GRID:
-	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);
+	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);				// FLOOR
+	//RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_heightmap);
 
 	// Step 6: Deactivate Shader program
 	m_shaderProgram->Disable(); // glUseProgram(0);
@@ -228,7 +200,7 @@ void DiffuseLightingApp::CreateCube()
 	/*
 	STEP 1: 
 	Specify position, colour for each vert of a cube
-	Example: Each face does not shar ea vert, 4 verts per face of cube
+	Example: Each face does not share a vert, 4 verts per face of cube
 	*/
 	
 	glm::vec4 white		(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
@@ -326,12 +298,12 @@ void DiffuseLightingApp::CreateCube()
 		glm::vec4 side2 = glm::normalize(verts[index0].position - verts[index2].position);
 
 		glm::vec3 normal = glm::normalize(glm::cross(glm::vec3(side1), glm::vec3(side2)));
-
+		// Add Normals to each face:
 		verts[index0].normal += normal;
 		verts[index1].normal += normal;
 		verts[index2].normal += normal;
 	}
-
+	// Normals share multiple faces
 	for (int i = 0; i < m_cube.vertCount; i++)
 	{
 		verts[i].normal = glm::normalize(verts[i].normal);
@@ -400,21 +372,24 @@ void DiffuseLightingApp::CreateGrid()
 	std::vector<Vertex> verts;
 
 	// Create Grid parameters
-	const int xDiv = 10; // m_heightmap->getWidth();	// Heightmap instead of 10;
-	const int yDiv = 10; // m_heightmap->getHeight();	// Heightmap pixels(r,g,b,a)
-	float spacing = 1.0f;
+	const int xDiv = 20;	// m_heightmap->getWidth();	// Heightmap instead of 10;
+	const int yDiv = 20;	//m_heightmap->getHeight();	// Heightmap pixels(r,g,b,a)
+	float spacing = 1.0f;	// each pixel equals one unit, eg bitmap 128 x 128 units
 
 	//TODO: algorithm to calculate vertices
 	for (int y = 0; y < yDiv; y++)
 	{
 		for (int x = 0; x < xDiv; x++)
 		{
-			// HeightMap: Access Pixel index value - used to sample pixel
+			// HeightMap: Access Pixel index value - To sample pixel
 			//unsigned int index = (y * xDiv + x);
 
-			// Access Heightmap pixels
+			// Access Heightmap pixels (* pixel by bytes per pixel
 			//const unsigned char *pixels = m_heightmap->getPixels();
-			//float yPos = (pixels[index * 3] / 255.0f) * 2.0f - 1.0f;	// 3=red pixel bitmap image, 255=red, if blue [index*3+1]. green +2..
+
+			//float yPos = 0; pre heightmap
+			// 3=red pixel bitmap image, 255=red, if blue [index*3+1]. green +2..
+			//float yPos = (pixels[index * 3] / 255.0f) * 2.0f - 1.0f;
 
 			// GRID plane going into the screen .: z & y inverted
 			Vertex v;
@@ -451,9 +426,9 @@ void DiffuseLightingApp::CreateGrid()
 			unsigned short i2 = (y + 1) * xDiv + (x + 1);
 			unsigned short i3 = (y + 1) * xDiv + x;
 
-			indices.push_back(i0);
-			indices.push_back(i2);
-			indices.push_back(i1);
+			indices.push_back(i0);	//
+			indices.push_back(i2);	// => Each set of 3 index values equals a face
+			indices.push_back(i1);	//
 
 			indices.push_back(i0);
 			indices.push_back(i3);
@@ -461,7 +436,7 @@ void DiffuseLightingApp::CreateGrid()
 		}
 	}
 
-	// LOOP THROUGH INDICIES (face = set of 3) AND THEREFORE FACES
+	// LOOP THROUGH INDICIES (face = set of 3)
 	for (int i = 0; i < indices.size() / 3; i++)
 	{
 		// FACES OF VERTEX
@@ -544,36 +519,6 @@ void DiffuseLightingApp::DestroyGrid()
 
 void DiffuseLightingApp::LoadShader()
 {
-	// SHADER: Vertex
-	/*	Position:	attribute 0
-		Colour:		attribute 1 */
-	/// SHADERS LOCATED IN FILE:
-	//static const char* vertex_shader =
-	//	"#version 410\n \
-	//					in vec4 vPosition;\n \
-	//					in vec4 vColour;\n \
-	//					in vec2 vUv; \n \
-	//					out vec4 fColour;\n \
-	//					out vec2 fuv; \n \
-	//					uniform mat4 projectionView;\n \
-	//					void main ()\n \
-	//					{\n \
-	//						fuv = vUv; \n\
-	//						fColour = vColour; \n\
-	//						gl_Position = projectionView * vPosition; \n\ }";
-
-	//// SHADER: Fragment
-	//static const char* fragment_shader =
-	//	"#version 410\n \
-	//					in vec4 fColour;\n \
-	//					in vec2 fuv; \n \
-	//					out vec4 frag_colour;\n \
-	//					uniform sampler2D texture; \n\
-	//					void main ()\n \
-	//					{\n \
-	//						frag_colour = texture2D(texture, fuv) * fColour;\n \
-	//					}" ;
-
 	// CREATE: Shader
 	m_shaderProgram = new Shader();
 	m_shaderProgram->LoadFile("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag", [](unsigned int program) {
@@ -582,12 +527,9 @@ void DiffuseLightingApp::LoadShader()
 		glBindAttribLocation(program, 2, "vUv");
 		glBindAttribLocation(program, 3, "vNormal");
 	}); 
-
-
 	
 	// Shader::Load() moved to Shader.cpp
 	m_projectionViewLoc = glGetUniformLocation(m_shaderProgram->GetProgramId(), "projectionView");
-
 }
 
 void DiffuseLightingApp::UnloadShader()

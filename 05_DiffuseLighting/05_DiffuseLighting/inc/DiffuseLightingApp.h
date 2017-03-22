@@ -60,8 +60,9 @@ public:
 
 protected:
 
-	GLMesh m_cube;
-	GLMesh m_grid;
+	GLMesh m_cube;							// Platforms
+	GLMesh m_grid;							// Floor
+	GLMesh m_skybox;						// Skybox
 
 	Shader *m_shaderProgram;
 	//unsigned int m_shader;				// Program(Vertex, Fragment Shaders)
@@ -71,18 +72,35 @@ protected:
 	aie::Texture *m_texture;
 
 	// GRID: TEXTURE
-	aie::Texture *m_texture1;
-
-	// CUBE: TEXTURE
 	aie::Texture *m_whiteTexture;
+
+	// SPHERE: TEXTURE - SKYBOX
+	aie::Texture *m_stormydays_bk;
+	aie::Texture *m_stormydays_dn;
+	aie::Texture *m_stormydays_ft;
+	aie::Texture *m_stormydays_lf;
+	aie::Texture *m_stormydays_rt;
+	aie::Texture *m_stormydays_up;
+
+	// GRID: TEXTURE - BITMAP
+	aie::Texture *m_floormap;
 
 	// GRID: TEXTURE - HEIGHT MAP
 	//aie::Texture *m_heightmap;
+
 
 	// LIGHTING
 	glm::vec3 m_lightPosition = glm::vec3(0, 3, 0);
 	glm::vec3 m_lightColour = glm::vec3(1, 0.8, 0.8);
 	float m_ambientStrength = 0.1f;
+
+	// SKYBOX
+	//glm::vec3 m_skyboxPosition = glm::vec3(0, 10, 0);
+	//glm::vec3 m_skyboxColour = glm::vec3(1, 0.8, 0.8);
+
+	// FLOOR
+	//glm::vec3 m_floorPosition = glm::vec3(0, 10, 0);
+	//glm::vec3 m_floorColour = glm::vec3(1, 0, 0);
 
 	// camera transforms
 	Camera *m_camera;
