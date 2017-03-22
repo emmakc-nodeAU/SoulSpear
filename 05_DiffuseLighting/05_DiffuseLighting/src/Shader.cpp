@@ -1,101 +1,88 @@
 #include "Shader.h"
 #include <gl_core_4_4.h>
-
-#include <string>
+#include <iostream>
+#include <assert.h>
 #include <fstream>
-#include <streambuf>
+#include <sstream>
 
-Shader::Shader()
+Shader::Shader(std::string vertexPath, std::string fragPath)
+	: m_programID(-1)
 {
-
+	MakeShaderProgram(vertexPath, fragPath);
 }
 
-Shader::~Shader()		// inherit from shader class
+Shader::~Shader()
 {
-
+	if (m_programID != -1)
+	{
+		glDeleteProgram(m_programID);
+	}
 }
 
-void Shader::Enable()
+Shader::Shader(Shader && other)
 {
-	glUseProgram(m_shader);
+	m_programID = other.m_programID;
+	other.m_programID = -1;
 }
 
-void Shader::Disable()
+void Shader::MakeShaderProgram(std::string vertexPath, std::string fragPath)
 {
-	glUseProgram(0);
-}
+	// Load shaders from disk
+	unsigned int vertexShader = MakeShader(GL_VERTEX_SHADER, vertexPath);
+	unsigned int fragmentShader = MakeShader(GL_FRAGMENT_SHADER, fragPath);
+	assert(vertexShader != -1 && fragmentShader != -1);
 
-void Shader::Load(const char *vertexShader, const char *fragmentShader, std::function<void(unsigned int program)> cbBindAttribs)
-{
-	int success = GL_FALSE;	// Error checking 
+	// Create shader program, attach required shaders, then link shaders together
+	m_programID = glCreateProgram();
+	glAttachShader(m_programID, vertexShader);
+	glAttachShader(m_programID, fragmentShader);
+	glLinkProgram(m_programID);
 
-							// LOAD GEOMETRY
-							/* STEP 1:
-							Create vertex shader, link to source code, compile it */
-							// Create: Vertex Shader
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertexShader, NULL);
-	glCompileShader(vs);
-
-	/*STEP 2:
-	Create fragment shader, link to source code, compile it */
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragmentShader, NULL);
-	glCompileShader(fs);
-
-	/* STEP 3:
-	Create Shader Program */
-	m_shader = glCreateProgram();
-
-	/* STEP 4:
-	Attach vs & fs to shader program. */
-	glAttachShader(m_shader, vs);
-	glAttachShader(m_shader, fs);
-
-	// BINDING HERE
-	cbBindAttribs(m_shader);
-
-
-	// Link: Vert and Frag
-	glLinkProgram(m_shader);
-	
-	// ERROR HELPER
-	/*glGetProgramiv(m_shader, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE) {
+	int success = 0;
+	// IF FAILS - show errors:
+	glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
+	if(success == GL_FALSE)
+	{
 		int infoLogLength = 0;
-		glGetProgramiv(m_shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char* infolog = new char[infoLogLength];
+		glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-		glGetProgramInfoLog(m_shader, infoLogLength, 0, infolog);
-		printf("Error: Failed to link shader program!\n");
-		printf("%s\n", infolog);
-		delete[] infolog;
-	}*/
+		char* infoLog = new char[infoLogLength];
+		glGetProgramInfoLog(m_programID, infoLogLength, 0, infoLog);
+		std::cout << "Error trying to link shaders (" << vertexPath
+			<< ", " << fragPath << "):\n";
+		std::cout << infoLog;
 
-	/* STEP 6:
-	Destroy vertex and fragment shaders
-	They are now combined into shaderProgram*/
-	glDeleteShader(vs);
-	glDeleteShader(fs);
+		delete[] infoLog;
+
+		assert(false && "Shader failed to compile correctly!");
+	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 }
 
-void Shader::LoadFile(const char *vertexShaderFile, const char *fragmentShaderFile, std::function<void(unsigned int program)> cbBindAttribs)
+unsigned int Shader::MakeShader(unsigned int type, std::string path)
 {
-	std::ifstream vsFile(vertexShaderFile);
-	std::string vertexShader((std::istreambuf_iterator<char>(vsFile)), std::istreambuf_iterator<char>());
+	std::ifstream file;
+	file.open(path.c_str(), std::ifstream::in);
+	if (!file.good())
+	{
+		return -1;
+	}
 
-	std::ifstream fsFile(fragmentShaderFile);
-	std::string fragmentShader((std::istreambuf_iterator<char>(fsFile)), std::istreambuf_iterator<char>());
+	// READ FILE BUFFER and LOAD STRING STREAM
+	std::stringstream ss;
+	ss << file.rdbuf();
+	file.close();
 
-	Load(vertexShader.c_str(), fragmentShader.c_str(), cbBindAttribs);
-}
+	std::string codeString = ss.str();
 
-void Shader::Unload()
-{
-	glDeleteProgram(m_shader);
-}
+	unsigned int shaderHandle = glCreateShader(type);
+	
+	const char* shaderCode = codeString.c_str();
+	glShaderSource(shaderHandle, 1, (const char**)&shaderCode, 0);
+	glCompileShader(shaderHandle);
 
-unsigned int Shader::GetProgramId()	// Returns shader program m_shader
-{
-	return m_shader;
+	// Return compiled shader for the shader program
+	return shaderHandle;
 }

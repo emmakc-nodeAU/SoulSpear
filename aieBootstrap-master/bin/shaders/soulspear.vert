@@ -18,7 +18,7 @@ void main()
 	vPosition = Position;
 	vUV = UV;
 	
-	gl_Position = projectionViewWorldMatrix * Position;
+	gl_Position = projectionViewWorldMatrix * modelMatrix * vec4(Position, 1);
 	
 	// mat4 PVM = projectionViewWorldMatrix * modelMatrix;
 }

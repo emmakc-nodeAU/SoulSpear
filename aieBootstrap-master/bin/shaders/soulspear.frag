@@ -12,6 +12,7 @@ uniform vec3 LightColour;
 uniform vec3 CameraPos;
 uniform float SpecPow;
 
+
 void main()
 {
     // Diffuse

@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <vector>
 
 namespace aie
 {
@@ -11,6 +12,7 @@ namespace aie
 }
 class Camera;
 class Shader;
+class RenderData;
 
 struct Vertex
 {
@@ -63,6 +65,9 @@ protected:
 	GLMesh m_cube;							// Platforms
 	GLMesh m_grid;							// Floor
 	GLMesh m_skybox;						// Skybox
+
+	std::vector<RenderData*> m_SoulSpear;
+	Shader *m_shaderSoulSpear;
 
 	Shader *m_shaderProgram;
 	//unsigned int m_shader;				// Program(Vertex, Fragment Shaders)

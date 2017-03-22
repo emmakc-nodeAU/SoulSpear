@@ -22,10 +22,10 @@ STEP 4:	Unload Shader and Geometry
 #include <glm/ext.hpp>
 
 #include <Texture.h>
-
+#include "RenderData.h"
 #include "Camera.h"
 #include "Shader.h"
-
+#include "GeometryHelper.h"
 #include <gl_core_4_4.h>
 
 #include <imgui.h>
@@ -68,6 +68,10 @@ bool DiffuseLightingApp::startup() {
 	// GEOMETRY
 	CreateCube();
 	CreateGrid();
+
+	// Soul Spear
+	m_SoulSpear = GeometryHelper::loadObjFromFile("./soulspear/soulspear.obj");
+	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
 
 	return true;
 }
@@ -137,16 +141,16 @@ void DiffuseLightingApp::draw() {
 	clearScreen();
 
 	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
-	m_shaderProgram->Enable(); // glUseProgram(m_shader);
-
+	//m_shaderProgram->Enable(); // glUseProgram(m_shader);
+	glUseProgram(m_shaderProgram->GetProgramID());
 	// Step 2: Calculate projection view matrix, pass into shader program
 	glm::mat4 projectionView = projection * view;
 	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
 
 	// Lighting diffuse shader
-	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightAmbientStrength"), 1, &m_ambientStrength);
-	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightColour"), 1, &m_lightColour[0]); // Light colour
-	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
+	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightColour"), 1, &m_lightColour[0]); // Light colour
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
 
 	// RENDER CUBE:
 	// Position |  ?  | Colour | Texture
@@ -154,15 +158,33 @@ void DiffuseLightingApp::draw() {
 	RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);		// SCREEN	- RHS
 	RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);		// PLATFORM - LHS
 	RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);		// PLATFORM - RHS
-	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(0.2, 0.2, 0.2), m_whiteTexture);	// PLATFORM - CENTRE
+	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(2, 2, 2), m_whiteTexture);	// PLATFORM - CENTRE
 
 	// RENDER GRID:
 	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);				// FLOOR
 	//RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_heightmap);
+	
+	// Shader SS
+	glUseProgram(m_shaderSoulSpear->GetProgramID());
+	int loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "projectionViewWorldMatrix");
+	glUniformMatrix4fv(loc, 1, false, &projectionView[0][0]);
+	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "modelMatrix");
+	glm::mat4 modelMatrix(1);
+	glUniformMatrix4fv(loc, 1, false, &modelMatrix[0][0]);
+
+
+
+
+	// RENDER SS
+	for (auto& mesh : m_SoulSpear)
+	{
+		mesh->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumberOfIndicies());
+	}
 
 	// Step 6: Deactivate Shader program
-	m_shaderProgram->Disable(); // glUseProgram(0);
-	
+	//m_shaderProgram->Disable(); // glUseProgram(0);
+	glUseProgram(0);
 	Gizmos::draw(projection * view);
 }
 
@@ -177,15 +199,15 @@ void DiffuseLightingApp::RenderMesh(GLMesh *mesh, glm::vec3 &position, glm::vec3
 	);
 
 	// Sends Model Matrix
-	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "model"), 1, false, &model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "model"), 1, false, &model[0][0]);
 
 	// Sends Colour
-	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramId(), "diffuseColour"), 1, &materialColour[0]);
+	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "diffuseColour"), 1, &materialColour[0]);
 
 	// Texture: GPU texture slot zero(0)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, diffuseTexture->getHandle());
-	glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramId(), "texture"), 0);
+	glUniform1i(glGetUniformLocation(m_shaderProgram->GetProgramID(), "texture"), 0);
 
 	// Step 3: Render and Bind VAO mesh
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -200,7 +222,7 @@ void DiffuseLightingApp::CreateCube()
 	/*
 	STEP 1: 
 	Specify position, colour for each vert of a cube
-	Example: Each face does not share a vert, 4 verts per face of cube
+	Example: Each face holds 4 verts
 	*/
 	
 	glm::vec4 white		(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
@@ -520,16 +542,11 @@ void DiffuseLightingApp::DestroyGrid()
 void DiffuseLightingApp::LoadShader()
 {
 	// CREATE: Shader
-	m_shaderProgram = new Shader();
-	m_shaderProgram->LoadFile("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag", [](unsigned int program) {
-		glBindAttribLocation(program, 0, "vPosition");
-		glBindAttribLocation(program, 1, "vColour");
-		glBindAttribLocation(program, 2, "vUv");
-		glBindAttribLocation(program, 3, "vNormal");
-	}); 
+	m_shaderProgram = new Shader("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag");
+	//m_shaderProgram->LoadFile(); 
 	
 	// Shader::Load() moved to Shader.cpp
-	m_projectionViewLoc = glGetUniformLocation(m_shaderProgram->GetProgramId(), "projectionView");
+	m_projectionViewLoc = glGetUniformLocation(m_shaderProgram->GetProgramID(), "projectionView");
 }
 
 void DiffuseLightingApp::UnloadShader()

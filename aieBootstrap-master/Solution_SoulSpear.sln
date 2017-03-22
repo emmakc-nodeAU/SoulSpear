@@ -33,6 +33,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_ShaderClass", "..\04_ShaderClass\04_ShaderClass\04_ShaderClass.vcxproj", "{BA6BE378-81AB-4468-98CB-D1A550513006}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05_DiffuseLighting", "..\05_DiffuseLighting\05_DiffuseLighting\05_DiffuseLighting.vcxproj", "{A35A8184-0B2F-4000-BC3B-97739C530886}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF59BB0B-E059-4773-83DC-728A949647DA} = {AF59BB0B-E059-4773-83DC-728A949647DA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

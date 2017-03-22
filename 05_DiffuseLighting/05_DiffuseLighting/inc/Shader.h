@@ -1,25 +1,28 @@
 #pragma once
+#include <string>
 
-#include <functional>
 class Shader
 {
 public:
-	Shader();
-	virtual ~Shader();		// inherit from shader class
 
-	void Enable();
-	void Disable();
+	Shader(std::string vertexPath, std::string fragPath);
+	~Shader();
 
-	void Load(const char *vertexShader, const char *fragmentShader, std::function<void(unsigned int program)> cbBindAttribs);
-	void LoadFile(const char *vertexShaderFile, const char *fragmentShaderFile, std::function<void(unsigned int program)> cbBindAttribs);
+	Shader(const Shader& other) = delete;
+	Shader(Shader&& other);
 
-	void Unload();
+	Shader& operator=(const Shader& other) = delete;
 
-	unsigned int GetProgramId();	// Returns shader program m_shader
+	unsigned int GetProgramID() const { return m_programID; };
 
-
-protected:
-	unsigned int m_shader;
 private:
+
+	// Assemble Shaders, Make program
+	void MakeShaderProgram(std::string vertexPath, std::string fragPath);
+
+	// Load Shaders from Disc, Compile, pass back to MakeShaderProgram
+	unsigned int MakeShader(unsigned int type, std::string path);
+
+	unsigned int m_programID;
 
 };
