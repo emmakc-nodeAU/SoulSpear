@@ -82,7 +82,7 @@ namespace GeometryHelper
 			renderData->SetNumberofIndicies(vertices.size());
 			dataToReturn.push_back(renderData);
 
-			// FULSTRUM
+			// CAMERA FULSTRUM CULLING:
 			renderData->SetNumberofIndicies(numberofIndices);
 			renderData->Unbind();
 
