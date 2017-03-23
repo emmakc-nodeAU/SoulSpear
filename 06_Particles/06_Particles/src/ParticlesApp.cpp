@@ -150,6 +150,10 @@ void ParticlesApp::draw() {
 	glm::mat4 projection = m_camera->GetProjection();
 	glm::mat4 view = m_camera->GetView();
 
+
+	// FULLSTRUM CULLING
+
+
 	// wipe the screen to the background colour
 	clearScreen();
 
@@ -172,6 +176,7 @@ void ParticlesApp::draw() {
 	glUniformMatrix4fv(loc, 1, GL_FALSE,
 		&m_camera->GetProjectionView()[0][0]);
 	m_emitter->draw();
+
 
 
 	// RENDER CUBE:
@@ -564,7 +569,7 @@ void ParticlesApp::DestroyGrid()
 void ParticlesApp::LoadShader()
 {
 	// CREATE: Shader
-	m_shaderProgram = new Shader("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag");
+	m_shaderProgram = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
 	//m_shaderProgram->LoadFile(); 
 	
 	// Shader::Load() moved to Shader.cpp
