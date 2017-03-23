@@ -1,5 +1,5 @@
 #pragma once
-
+//#include "SphereBoundingVolume.h"
 class RenderData
 {
 public:
@@ -31,6 +31,11 @@ public:
 	};
 
 	unsigned int GetNumberOfIndicies() const { return m_numberofIndices; }
+
+	//Return this render data bounds as a const
+//	const SphereBoundingVolume& GetBounds() const { return m_bounds; }
+//	const SphereBoundingVolume& GetBounds() { return m_bounds; }
+
 
 private:
 	unsigned int m_VAO;

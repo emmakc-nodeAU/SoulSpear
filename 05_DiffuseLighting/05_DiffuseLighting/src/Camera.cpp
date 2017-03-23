@@ -89,6 +89,7 @@ void Camera::CalculateFront()
 void Camera::SetProjection(float fov, float aspect, float near, float far)
 {
 	m_projectionMatrix = glm::perspective(fov, aspect, near, far);
+	//UpdateFrustrumPlanes(); 
 }
 
 void Camera::SetPosition(const glm::vec3& pos)
@@ -134,6 +135,7 @@ glm::mat4& Camera::GetView()
 glm::mat4& Camera::GetProjection()
 {
 	return m_projectionMatrix;
+
 }
 
 void Camera::Lookat(glm::vec3 target)
