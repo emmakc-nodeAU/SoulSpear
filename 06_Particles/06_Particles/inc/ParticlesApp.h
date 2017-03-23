@@ -10,6 +10,7 @@ namespace aie
 {
 	class Texture;
 }
+class ParticleEmitter;
 class Camera;
 class Shader;
 class RenderData;
@@ -72,6 +73,9 @@ protected:
 	Shader *m_shaderProgram;
 	//unsigned int m_shader;				// Program(Vertex, Fragment Shaders)
 	unsigned int m_projectionViewLoc;
+
+	// PARTICLES
+	ParticleEmitter *m_emitter;
 
 	// CUBE: TEXTURE
 	aie::Texture *m_texture;

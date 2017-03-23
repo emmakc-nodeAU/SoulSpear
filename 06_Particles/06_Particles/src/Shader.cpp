@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <fstream>
 #include <sstream>
+#include "ParticleEmitter.h"
+#include "ParticlesApp.h"
 
 Shader::Shader(std::string vertexPath, std::string fragPath)
 	: m_programID(-1)

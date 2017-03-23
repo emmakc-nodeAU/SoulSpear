@@ -30,10 +30,13 @@
     <ClCompile Include="src\RenderData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SphereBoundingVolume.cpp">
+    <ClCompile Include="src\ParticlesApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ParticlesApp.cpp">
+    <ClCompile Include="src\SphereBoundingVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleEmitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +53,13 @@
     <ClInclude Include="inc\RenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SphereBoundingVolume.h">
+    <ClInclude Include="inc\ParticlesApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\ParticlesApp.h">
+    <ClInclude Include="inc\SphereBoundingVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\ParticleEmitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

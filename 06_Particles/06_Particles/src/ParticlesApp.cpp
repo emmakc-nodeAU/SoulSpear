@@ -29,6 +29,8 @@ STEP 4:	Unload Shader and Geometry
 #include <gl_core_4_4.h>
 
 #include <imgui.h>
+#include "ParticleEmitter.h"
+
 
 using glm::vec3;
 using glm::vec4;
@@ -73,6 +75,14 @@ bool ParticlesApp::startup() {
 	m_SoulSpear = GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
 
+	// Particles
+	m_emitter = new ParticleEmitter();
+	m_emitter->initalise(1000, 500,
+		0.1f, 1.0f,
+		1, 5,
+		1, 0.1f,
+		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
 	return true;
 }
 
@@ -104,6 +114,9 @@ void ParticlesApp::update(float deltaTime) {
 
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();
+
+	// PARTICLES
+	m_emitter->update(deltaTime, (m_camera->GetPosition(), m_camera->GetPitch(), m_camera->GetRoll(), 1));
 
 	// LIGHTING - THE BALL REPRESENTS THE LIGHT
 		//	position: m_skyboxPosition
@@ -151,6 +164,15 @@ void ParticlesApp::draw() {
 	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
 	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightColour"), 1, &m_lightColour[0]); // Light colour
 	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
+
+	// RENDER PARTICLES
+	glUseProgram(m_particleShaderProgramID);
+	int loc = glGetUniformLocation(m_particleShaderProgramID,
+		"projectionView");
+	glUniformMatrix4fv(loc, 1, GL_FALSE,
+		&m_camera->GetProjectionView()[0][0]);
+	m_emitter->draw();
+
 
 	// RENDER CUBE:
 	// Position |  ?  | Colour | Texture
