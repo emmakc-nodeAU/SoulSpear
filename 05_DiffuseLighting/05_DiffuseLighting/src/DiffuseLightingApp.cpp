@@ -70,7 +70,7 @@ bool DiffuseLightingApp::startup() {
 	CreateGrid();
 
 	// Soul Spear
-	m_SoulSpear = GeometryHelper::loadObjFromFile("./soulspear/soulspear.obj");
+	m_SoulSpear = GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
 
 	return true;
