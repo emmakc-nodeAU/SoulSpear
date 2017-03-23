@@ -2,6 +2,7 @@
 #include <Input.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include "SphereBoundingVolume.h"
 
 Camera::Camera()
 {
@@ -85,6 +86,62 @@ void Camera::CalculateFront()
 	m_cameraFront = glm::normalize(front);
 }
 
+void Camera::UpdateFrustrumPlanes()
+{
+	// UpdateFrustrumPlanes - inside anywhere that updates matrix projection/view
+	glm::mat4& projView = GetProjectionView();
+	// Right Side
+	m_frustrumPlanes[0] = glm::vec4(
+	projView[0][3] - projView[0][[0]
+	projView[1][3] - projView[1][[0]
+	projView[2][3] - projView[2][[0]
+	projView[3][3] - projView[3][[0])
+
+	// Left Side
+	m_frustrumPlanes[1] = glm::vec4(
+	projView[0][3] + projView[0][[0]
+	projView[1][3] + projView[1][[0]
+	projView[2][3] + projView[2][[0]
+	projView[3][3] + projView[3][[0])
+
+	// Top Side
+	m_frustrumPlanes[2] = glm::vec4(
+	projView[0][3] - projView[0][[1]
+	projView[1][3] - projView[1][[1]
+	projView[2][3] - projView[2][[1]
+	projView[3][3] - projView[3][[1])
+	
+	// Bottom Side
+	m_frustrumPlanes[3] = glm::vec4(
+	projView[0][3] + projView[0][[1]
+	projView[1][3] + projView[1][[1]
+	projView[2][3] + projView[2][[1]
+	projView[3][3] + projView[3][[1])
+	
+	// Far Side
+	m_frustrumPlanes[4] = glm::vec4(
+	projView[0][3] - projView[0][[2]
+	projView[1][3] - projView[1][[2]
+	projView[2][3] - projView[2][[2]
+	projView[3][3] - projView[3][[2])
+	
+	// Near Side
+	m_frustrumPlanes[5] = glm::vec4(
+	projView[0][3] + projView[0][[2]
+	projView[1][3] + projView[1][[2]
+	projView[2][3] + projView[2][[2]
+	projView[3][3] + projView[3][[2])
+};
+
+// Plane normalisation: Normalise, cast to vec4, w=0
+for (int i = 0; i < 6; i++)
+{
+	float d = glm::length(m_frustrumPlanes[[i]);
+	m_frustrumPlanes[i] /= d;
+}
+
+}
+
 // SET
 void Camera::SetProjection(float fov, float aspect, float near, float far)
 {
@@ -148,4 +205,40 @@ void Camera::Lookat(glm::vec3 target)
 	m_cameraYaw = glm::degrees(atan2(dir.y, dir.x));
 	
 	CalculateFront();
+}
+
+bool Camera::IsBoundsInFrustrum(const glm::mat4& modelMatrix, const SphereBoundingVolume & bound)
+{
+	glm::vec3 actualCentre =
+		glm::vec3(modelMatrix * glm::vec4(bounds, GetCentre(), 1));
+
+	glm::vec3 scale;
+	glm::quat rot;
+	glm::vec3 position;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(modelMatrix, scale, rot, position, skew, perspective);
+
+	float largestScale = (scale.x > scale.y) ? scale.x : scale.y;
+	largestScale = (scale.z > largestScale) ? scale.z : largestScale;
+
+	float actualRadius = bounds.GetRadius() * largestScale;
+
+	for (int i = 0; i < 6; ++i)
+	{
+		// Plane has directoin facing, distance of nearest point of plane from origin of the world
+		//   |  \   .	Distance of point and world origin(0,0)
+		//   |	 \      Distance of plane
+		//  .|_________
+		const glm::vec4& plane = m_frustrumPlanes[i];
+		float d = glm::dot(glm::vec3(plane), actualCentre) + plane.w;
+		if (d < -bounds.GetRadius())
+		{
+			// behind plane .: outside plane, .: not inside frustrum .: dont render.
+			std::cout << "outside of a plane, no need to render !\n";
+			return false;
+		}
+	}
+	std::cout << "inside frustum, render"\n;
+	return true;
 }

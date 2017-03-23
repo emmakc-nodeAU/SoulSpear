@@ -82,6 +82,12 @@ namespace GeometryHelper
 			renderData->SetNumberofIndicies(vertices.size());
 			dataToReturn.push_back(renderData);
 
+			// FULSTRUM
+			renderData->SetNumberofIndicies(numberofIndices);
+			renderData->Unbind();
+
+			std::vector<SimpleVertex> verts(vertices, vertices + (rows * cols));
+			renderData->GetBounds().fit(verts);
 
 		}
 		

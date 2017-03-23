@@ -1,5 +1,6 @@
 #pragma once
-//#include "SphereBoundingVolume.h"
+#include "SphereBoundingVolume.h"
+
 class RenderData
 {
 public:
@@ -33,8 +34,8 @@ public:
 	unsigned int GetNumberOfIndicies() const { return m_numberofIndices; }
 
 	//Return this render data bounds as a const
-//	const SphereBoundingVolume& GetBounds() const { return m_bounds; }
-//	const SphereBoundingVolume& GetBounds() { return m_bounds; }
+	const SphereBoundingVolume& GetBounds() const { return m_bounds; }
+	const SphereBoundingVolume& GetBounds() { return m_bounds; }
 
 
 private:
@@ -45,4 +46,6 @@ private:
 	unsigned int m_numberofIndices;
 
 	bool		 m_hasIndexBuffer;
+
+	SphereBoundingVolume m_bounds;// every mesh will have a bounds assoc. with it.
 };

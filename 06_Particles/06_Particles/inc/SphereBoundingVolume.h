@@ -2,6 +2,7 @@
 #include <glm/vec3.hpp>
 #include <vector>
 #include <iostream>
+#include <glm/gtx/matrix_decompose.hpp>
 
 class SphereBoundingVolume
 {
@@ -53,22 +54,6 @@ private:
 
 };
 /*
-Tutorial:
-Fit function array of vec3, iterates for min/max?
-Class mod - template the fit()
-
-Go bk ot RenderData class and ADD
-include sphereboundingvolume
-RenderData.h 
-public:
-//Return this render data bounds as a const
-const SphereBoundingVolume& GetBoundsAsConst() const {return m_bounds;}
-const SphereBoundingVolume& GetBounds() {return m_bounds;}
-
-private: 
-// Store Bounds for this render data
-SphereBoundingVolume m_bounds;		// every mesh will have a bounds assoc. with it.
-
 
 GeometryHelper.cppp
 
@@ -99,8 +84,23 @@ camera.cpp
 // tutorial page 7 - iterate all 6 check instersect and return true
 // printf changed to cout in tutorial
 
-bool Camera::IsBoundsInFrustrum(const SphereBoundingVolume & bound)
+bool Camera::IsBoundsInFrustrum(const glm::mat4& modelMatrix, const SphereBoundingVolume & bound)
 {
+glm::vec3 actualCentre =
+glm::vec3(modelMatrix * glm::vec4(bounds, GetCentre(), 1));
+
+glm::vec3 scale;
+glm::quat rot;
+glm::vec3 position;
+glm::vec3 skew;
+glm::vec4 perspective;
+glm::decompose(modelMatrix, scale, rot, position, skew, perspective);
+
+float largestScale = (scale.x > scale.y) ? scale.x : scale.y;
+largestScale = (scale.z > largestScale) ? scale.z : largestScale;
+
+float actualRadius = bounds.GetRadius() * largestScale;
+
 for (int i = 0; i < 6; ++i)
 {
 // Plane has directoin facing, distance of nearest point of plane from origin of the world
@@ -108,7 +108,7 @@ for (int i = 0; i < 6; ++i)
 //   |	 \      Distance of plane
 //  .|_________
 const glm::vec4& plane = m_frustrumPlanes[i];
-float d = glm::dot(glm::vec3(plane), bounds.GetCentre()) + plane.w;
+float d = glm::dot(glm::vec3(plane), actualCentre) + plane.w;
 if (d < -bounds.GetRadius())
 {
  // behind plane .: outside plane, .: not inside frustrum .: dont render.
@@ -128,5 +128,7 @@ if (d < -bounds.GetRadius())
  renderData->Render();
  }
  }
+
+
 
  */

@@ -2,6 +2,7 @@
 #include <gl_core_4_4.h>
 #include <assert.h>
 
+
 RenderData::RenderData()
 	: m_VAO(-1)
 	, m_VBO(-1)
