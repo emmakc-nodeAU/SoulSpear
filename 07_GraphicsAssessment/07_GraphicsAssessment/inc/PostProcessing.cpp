@@ -56,7 +56,10 @@ bool PostProcessing::startup()
 	glDrawBuffers(1, drawBuffers);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	printf("Framebuffer Error\n");
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		printf("Framebuffer Error\n");
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

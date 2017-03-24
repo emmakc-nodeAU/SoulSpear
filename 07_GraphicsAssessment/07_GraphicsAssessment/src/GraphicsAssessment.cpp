@@ -40,13 +40,9 @@ using glm::vec4;
 using glm::mat4;
 using aie::Gizmos;
 
-GraphicsAssessment::GraphicsAssessment() {
+GraphicsAssessment::GraphicsAssessment() {}
 
-}
-
-GraphicsAssessment::~GraphicsAssessment() {
-
-}
+GraphicsAssessment::~GraphicsAssessment() {}
 
 bool GraphicsAssessment::startup() {
 	
@@ -64,8 +60,6 @@ bool GraphicsAssessment::startup() {
 	m_camera->LookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0));
-
-
 
 	// GRID
 	m_texture = new aie::Texture("./textures/grass.png");
@@ -93,8 +87,6 @@ bool GraphicsAssessment::startup() {
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
-
-
 
 	// POST PROCESSING
 	m_postprocessing = new PostProcessing();
@@ -212,33 +204,34 @@ void GraphicsAssessment::draw() {
 
 	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
 	//m_shaderProgram->Enable(); // glUseProgram(m_shader);
-	glUseProgram(m_shaderProgram->GetProgramID());
-	// Step 2: Calculate projection view matrix, pass into shader program
-	projectionView = m_projectionMatrix * m_viewMatrix;
-	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
-
-	// Lighting diffuse shader
-	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
-	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightColour"), 1, &m_lightColour[0]); // Light colour
-	glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
+	//glUseProgram(m_shaderProgram->GetProgramID());
+	//// Step 2: Calculate projection view matrix, pass into shader program
+	//projectionView = m_projectionMatrix * m_viewMatrix;
+	//glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
+	//
+	//// Lighting diffuse shader
+	//glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
+	//glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightColour"), 1, &m_lightColour[0]); // Light colour
+	//glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightPos"), 1, &m_lightPosition[0]); // Light Position
 
 	// RENDER PARTICLES
-	m_emitter->draw();
 	// PARTICLES - BIND SHADERS
 	glUseProgram(m_shaderParticles->GetProgramID());
 	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
 	glUniformMatrix4fv(loc, 1, false, &(m_camera->GetProjectionView()[0][0]));
 
+	m_emitter->draw();
+
 	// RENDER CUBE:
 	// Position |  ?  | Colour | Texture
-	RenderMesh(&m_cube, glm::vec3(-4, 2, 6), glm::vec3(1, 1, 1), glm::vec3(2, 0, 2), m_whiteTexture);		// SCREEN	- LHS
-	RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);		// SCREEN	- RHS
-	RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);		// PLATFORM - LHS
-	RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);		// PLATFORM - RHS
-	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(2, 2, 2), m_whiteTexture);	// PLATFORM - CENTRE
+	//RenderMesh(&m_cube, glm::vec3(-4, 2, 6), glm::vec3(1, 1, 1), glm::vec3(2, 0, 2), m_whiteTexture);		// SCREEN	- LHS
+	//RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);		// SCREEN	- RHS
+	//RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);		// PLATFORM - LHS
+	//RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);		// PLATFORM - RHS
+	//RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(2, 2, 2), m_whiteTexture);	// PLATFORM - CENTRE
 
 	// RENDER GRID:
-	RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);				// FLOOR
+	//RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_texture);				// FLOOR
 	//RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_heightmap);
 	
 	// SHADER: SOULSPEAR
@@ -310,7 +303,7 @@ void GraphicsAssessment::CreateCube()
 	glm::vec4 magenta	(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
 	
 	Vertex verts[] = {
-															// {POSITION} , {COLOUR}
+	// {POSITION} , {COLOUR}
 															// FRONT FACE	- WHITE
 	{ { -0.5f,-0.5f, 0.5f, 1.0f },white, { 0.0f, 0.0f } },	// 0 base left
 	{ {  0.5f,-0.5f, 0.5f, 1.0f },white, { 1.0f, 0.0f } },	// 1 top left
