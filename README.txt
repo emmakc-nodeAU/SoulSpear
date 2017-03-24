@@ -29,7 +29,7 @@ Evidence that includes:
 
 Submitted executable for a 3D real-time application that demonstrates a complete, and 
 consistent, 3D environment that implements at a minimum:
-> Imported pre-made textured 3D assets													// SoulSpear model
+> Imported pre-made textured 3D assets													// SoulSpear model / Potential Stanford Bunny if time.
 >3D animation, implemented as:
 	- Skeletal animation, and / or
 	- Vertex morph animation, and / or
