@@ -38,11 +38,11 @@ struct GLMesh
 	unsigned int ibo;	// Holds indices
 };
 
-class ParticlesApp : public aie::Application {
+class GraphicsAssessment : public aie::Application {
 public:
 
-	ParticlesApp();
-	virtual ~ParticlesApp();
+	GraphicsAssessment();
+	virtual ~GraphicsAssessment();
 
 	virtual bool startup();
 	virtual void shutdown();
