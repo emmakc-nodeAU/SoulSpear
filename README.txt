@@ -30,15 +30,15 @@ Evidence that includes:
 
 Submitted executable for a 3D real-time application that demonstrates a complete, and 
 consistent, 3D environment that implements at a minimum:
-> Imported pre-made textured 3D assets								// SoulSpear model / Potential Stanford Bunny if time.
+> Imported pre-made textured 3D assets	// SoulSpear model / Possible Stanford Bunny?
 >3D animation, implemented as:
 	- Skeletal animation, and / or
 	- Vertex morph animation, and / or
-	- Complex particle simulation								// ParticleEmitter.h / .cpp
-> Custom GPU shaders for rendering all assets							// Shader .h /.cpp
-> At least one post-processing technique which may include Deferred Rendering 			// PostProcessing.h /.cpp
-> Camera frustum culling									// SphereBoundingVolume .h / .cpp
-> Submitted source code for project 								// Project: 07_GraphicsAssessment
+	- Complex particle simulation		// ParticleEmitter.h / .cpp
+> Custom GPU shaders for rendering all assets	// Shader .h /.cpp
+> At least one post-processing technique which may include Deferred Rendering // PostProcessing.h /.cpp
+> Camera frustum culling		// SphereBoundingVolume .h / .cpp
+> Submitted source code for project 	// Project: 07_GraphicsAssessment
 
 
 
@@ -48,7 +48,7 @@ consistent, 3D environment that implements at a minimum:
 Evidence that includes:
 > Real-time 3D Environment Application including a Graphical User Interface that allows 
 the user to:
-	- Modify the 3D environment through the use of GUI controls				//	Ambient Light and Colour sliders
+	- Modify the 3D environment through the use of GUI controls	// Ambient Light and Colour sliders
 	- Raise callback events through interactions with the GUI that effect the 3D environment
 > A README-style document produced documenting to a user how to use the GUI ::::>
 
