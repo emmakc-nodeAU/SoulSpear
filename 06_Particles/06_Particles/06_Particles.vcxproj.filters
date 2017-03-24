@@ -68,5 +68,8 @@
     <ClInclude Include="inc\Camera_AIE_ClassicModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\FlyCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
