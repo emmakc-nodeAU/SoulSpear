@@ -4,12 +4,12 @@ README
 -------------------------------------------------------------------------------------
 
  Student:	Emma Cameron
- StudentID: 	s171410
+ StudentID: s171410
  Date:		24 March 2017
  Teacher:	Matthew Dodd
- Assessment:	Computer Graphics
+ Assessment:Computer Graphics
  
- File Path:	A:\ComputerGraphics.zip
+ File Path:		A:\ComputerGraphics.zip
  GitHub URL:	https://github.com/emmakc-nodeAU/SoulSpear
  
 -------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ consistent, 3D environment that implements at a minimum:
 > Custom GPU shaders for rendering all assets	// Shader .h /.cpp
 > At least one post-processing technique which may include Deferred Rendering // PostProcessing.h /.cpp
 > Camera frustum culling		// SphereBoundingVolume .h / .cpp
-> Submitted source code for project 	// Project: 07_GraphicsAssessment
+> Submitted source code for project 	// Project: 00_Application3D
 
 
 
@@ -53,8 +53,8 @@ the user to:
 > A README-style document produced documenting to a user how to use the GUI ::::>
 
 -------------------------- 'GUI' SLIDER CONTROLS -------------------------------------
-	KEYS:	W, A, S, D, SHIFT, SPACE = UP, LEFT, DOWN, RIGHT, SHIFT L, R			
-	CLICK:	On Screen Slider to change the lighting and colour of the room
+	KEYS:	W, A, S, D, LEFT ARROW, RIGHT ARROW = UP, LEFT, DOWN, RIGHT, ROTATE LEFT & RIGHT			
+	MOUSE:	Click on screen sliders to change the lighting and colour of the room
 -------------------------------------------------------------------------------------	
 	
 	

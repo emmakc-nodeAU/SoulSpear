@@ -61,22 +61,22 @@ bool GraphicsAssessment::startup() {
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0));
 
+	// GEOMETRY
+	CreateCube();
+	CreateGrid();
+
 	// GRID
 	m_texture = new aie::Texture("./textures/grass.png");
 
 	// CUBE
 	m_whiteTexture = new aie::Texture("./textures/white.png");
 	
-	// SHADER
-	LoadShader();
-
-	// GEOMETRY
-	CreateCube();
-	CreateGrid();
-
 	// SOUL SPEAR
 	m_SoulSpear = GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
+
+	// SHADER
+	LoadShader();
 
 	// PARTICLES
 	m_emitter = new ParticleEmitter();
@@ -85,7 +85,6 @@ bool GraphicsAssessment::startup() {
 		1, 5,
 		1, 0.1f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
-
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
 
 	// POST PROCESSING
@@ -113,16 +112,23 @@ void GraphicsAssessment::update(float deltaTime) {
 
 	float time = getTime();
 
-	// LIGHT: Orbits around x
+	// wipe the gizmos clean for this frame
+	Gizmos::clear();
+
+	// LIGHT Orbits around x
 	m_lightPosition.x = glm::cos(time) * 5;
 	m_lightPosition.z = glm::sin(time) * 5;
 
-	// IMGUI Controls
+	// LIGHT - BALL REPRESENTS THE LIGHT
+		//	position: m_skyboxPosition
+		//	radius	: 0.1f
+		//	size:	16 x 16
+		//	fill colour: m_lightColour cast vec4, vec3+, 1 for transparency
+	Gizmos::addSphere(m_lightPosition, 0.1f, 16, 16, glm::vec4(m_lightColour, 1.0f));
+
+	// GUI Controls
 	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
 	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
-
-	// wipe the gizmos clean for this frame
-	Gizmos::clear();
 
 	// PARTICLES
 	m_emitter->update(deltaTime, m_camera->GetTransform());
@@ -130,13 +136,6 @@ void GraphicsAssessment::update(float deltaTime) {
 	// CAMERA
 	m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
 		vec3(0), vec3(0, 1, 0));
-
-	// LIGHTING - THE BALL REPRESENTS THE LIGHT
-		//	position: m_skyboxPosition
-		//	radius	: 0.1f
-		//	size:	16 x 16
-		//	fill colour: m_lightColour cast vec4, vec3+, 1 for transparency
-	Gizmos::addSphere(m_lightPosition, 0.1f, 16, 16, glm::vec4(m_lightColour, 1.0f));
 
 	// GRID: Structure with gizmos
 	vec4 white(1);
@@ -170,7 +169,7 @@ void GraphicsAssessment::draw() {
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.0f);
 
-	// Camera
+	// CAMERA
 	Gizmos::draw(m_camera->GetProjectionView());
 	//glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
 
@@ -180,9 +179,9 @@ void GraphicsAssessment::draw() {
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	// REFLECTION OBJECTS TO RENDER HERE:
 	soulSpear();
-
 
 	Gizmos::draw(m_camera->GetProjectionView());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -253,8 +252,8 @@ void GraphicsAssessment::draw() {
 
 	// Step 6: Deactivate Shader program
 	//m_shaderProgram->Disable(); // glUseProgram(0);
-	glUseProgram(0);
-	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
+	//glUseProgram(0);
+	//Gizmos::draw(m_projectionMatrix * m_viewMatrix);
 }
 
 

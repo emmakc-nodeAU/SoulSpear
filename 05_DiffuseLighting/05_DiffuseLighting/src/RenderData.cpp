@@ -9,7 +9,6 @@ RenderData::RenderData()
 	, m_numberofIndices(0)
 	, m_hasIndexBuffer(true)
 {	
-
 }
 
 RenderData::~RenderData()
@@ -22,7 +21,6 @@ RenderData::~RenderData()
 		glDeleteVertexArrays(1, &m_VAO);
 }
 
-
 RenderData::RenderData(RenderData&& other)
 {
 	m_VAO = other.m_VAO;
@@ -34,10 +32,7 @@ RenderData::RenderData(RenderData&& other)
 	other.m_VAO = -1;
 	other.m_VBO = -1;
 	other.m_IBO = -1;
-
 }
-
-
 
 void RenderData::GenerateBuffers(bool generateIndexBuffer /* = true */)
 {

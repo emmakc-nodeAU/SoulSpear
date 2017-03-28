@@ -25,7 +25,7 @@ _01_ProjectSetupApp::~_01_ProjectSetupApp() {
 
 bool _01_ProjectSetupApp::startup() {
 	
-	setBackgroundColour(0.25f, 0.25f, 0.25f);
+	setBackgroundColour(1.0f, 0.0f, 0.25f);
 
 	// initialise gizmo primitive counts
 	Gizmos::create(10000, 10000, 10000, 10000);

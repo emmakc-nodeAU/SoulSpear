@@ -68,48 +68,45 @@ protected:
 	glm::mat4 m_viewMatrix;
 	glm::mat4 m_projectionMatrix;
 
-	GLMesh m_cube;							// Platforms
-	GLMesh m_grid;							// Floor
-	GLMesh m_skybox;						// Skybox
+	GLMesh m_skybox;
 
-	// SOULSPEAR
+	Shader *m_shaderProgram;
+	//unsigned int m_shader;	// Program(Vertex, Fragment Shaders)
+	unsigned int m_projectionViewLoc;
+
+
+	// SOULSPEAR-------------------------------
+		// Object
 	std::vector<RenderData*> m_SoulSpear;
-	// SOULSPEAR - Shader
+		// Shader
 	Shader *m_shaderSoulSpear;
-
-	// SOULSPEAR: TEXTURE
+		// Texture
 	aie::Texture *m_SoulSpearDiffuse;
 	aie::Texture *m_SoulSpearNormal;
 	aie::Texture *m_SoulSpearSpecular;
+	// ------------------------------------------
 
-	Shader *m_shaderProgram;
-	//unsigned int m_shader;				// Program(Vertex, Fragment Shaders)
-	unsigned int m_projectionViewLoc;
 
-	// PARTICLES
+	// PARTICLES---------------------------------
 	ParticleEmitter *m_emitter;
 	Shader*	m_shaderParticles;
-	// CUBE: TEXTURE
+	// ------------------------------------------
+
+
+	// CUBE--------------------------------------
+		// Object
+	GLMesh m_cube;
+		// Texture
 	aie::Texture *m_texture;
-
-	// GRID: TEXTURE
-	aie::Texture *m_whiteTexture;
-
-	// SPHERE: TEXTURE - SKYBOX
-	//aie::Texture *m_stormydays_bk;
-	//aie::Texture *m_stormydays_dn;
-	//aie::Texture *m_stormydays_ft;
-	//aie::Texture *m_stormydays_lf;
-	//aie::Texture *m_stormydays_rt;
-	//aie::Texture *m_stormydays_up;
-
-	// GRID: TEXTURE - BITMAP
-	aie::Texture *m_floormap;
-
-	// GRID: TEXTURE - HEIGHT MAP
-	//aie::Texture *m_heightmap;
+	// ------------------------------------------
 
 
+	// GRID -------------------------------------
+	GLMesh m_grid;					// Object
+	aie::Texture *m_whiteTexture;	// Texture
+	aie::Texture *m_floormap;		// bitmap
+	//aie::Texture *m_heightmap;	// heightmap
+	// ------------------------------------------
 	
 
 	// LIGHTING
