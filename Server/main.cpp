@@ -4,6 +4,10 @@
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
 #include <BitStream.h>
+#include <thread>
+#include <chrono>
+
+#include "GameMessages.h"
 
 int main()
 {
@@ -13,7 +17,7 @@ int main()
 	RakNet::RakPeerInterface* pPeerInterface = nullptr;
 
 	// STARTUP SERVER: Start listening for clients
-	std::cout << "Cranking up the BOSSMODE..the server is active..." << std::endl;
+	std::cout << "Activating server, prepare for glory..." << std::endl;
 
 	// INITIALIZE RakNet Peer Interface
 	pPeerInterface = RakNet::RakPeerInterface::GetInstance();
@@ -51,6 +55,10 @@ int main()
 			}
 		}
 	}
+
+	// GAME MESSAGES
+	// Startup a thread to ping clients every second
+	std::thread pingThread(sendClientPing, pPeerInterface);
 
 	return 0;
 }
