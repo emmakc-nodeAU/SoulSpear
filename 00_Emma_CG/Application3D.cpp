@@ -70,8 +70,8 @@ bool Application3D::startup() {
 
 	// MODELS - Initialise Model and Shader ------------------------------------------
 	// BUNNY
-	//m_bunny			= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
-	//m_modelShader		= new Shader("./shaders/model.vert", "./shaders/model.frag");
+	m_bunny			= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
+	m_modelShader		= new Shader("./shaders/model.vert", "./shaders/model.frag");
 	// SOULSPEAR
 	m_SoulSpear			= GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear	= new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
