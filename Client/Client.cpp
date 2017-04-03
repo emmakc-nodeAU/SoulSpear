@@ -150,3 +150,14 @@ void Client::handleNetworkMessages()
 	}
 }
 
+void Client::chatMessages()
+{
+	RakNet::Packet* packet;
+
+	for (packet = m_pPeerInterface->Send(); packet;
+		m_pPeerInterface->AllocatePacket(packet),
+		packet = m_pPeerInterface->Send())
+	{
+	}
+}
+

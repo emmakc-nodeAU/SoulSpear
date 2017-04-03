@@ -25,6 +25,13 @@ public:
 	void initaliseClientConnection();
 	// LISTEN FOR MESSAGES
 	void handleNetworkMessages();
+	// CREATE MESSAGE
+	void chatMessages();
+	// Client: User requests Client to send chat message packet
+	// Server: Receives chat message, forward message to all connected users
+	// Client system address:
+	// systemAddress: User[Set username]
+	// systemAddress: Iterate through users: [Query No. users in server]
 
 protected:
 
