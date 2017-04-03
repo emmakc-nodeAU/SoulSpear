@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <iostream>
+#include "GameMessages.h"
 
 using glm::vec3;
 using glm::vec4;
