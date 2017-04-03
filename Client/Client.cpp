@@ -130,10 +130,20 @@ void Client::handleNetworkMessages()
 			std::cout << "We have been disconnected. \n";
 			break;
 		case ID_CONNECTION_LOST:
-			std::cout << "COnnection lost. \n";
+			std::cout << "Connection lost. \n";
 			break;
+		case ID_SERVER_TEXT_MESSAGE:
+		{
+			RakNet::BitStream bsIn(packet->data, packet->length, false);
+			bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+
+			RakNet::RakString str;
+			bsIn.Read(str);
+			std::cout << str.C_String() << std::endl;
+			break;
+		}
 		default:
-			std::cout << "Received a message with an unkown id: " << packet->data[0];
+			std::cout << "Received a message with an unknown id: " << packet->data[0];
 			break;
 		}
 	}
