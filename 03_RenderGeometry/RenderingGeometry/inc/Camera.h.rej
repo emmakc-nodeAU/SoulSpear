@@ -1,0 +1,10 @@
+diff a/03_RenderGeometry/RenderingGeometry/inc/Camera.h b/03_RenderGeometry/RenderingGeometry/inc/Camera.h	(rejected hunks)
+@@ -1,6 +1,6 @@
+ #pragma once
+-#include <glm\glm.hpp>
+-#include <glm\ext.hpp>
++#include <glm/vec3.hpp>
++#include <glm/mat4x4.hpp>
+ 
+ class Camera
+ {

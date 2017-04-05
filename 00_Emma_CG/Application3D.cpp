@@ -125,7 +125,11 @@ bool Application3D::startup() {
 
 	// MODELS - Initialise Model and Shader ------------------------------------------
 	// BUNNY
+<<<<<<< HEAD
 	m_bunny				= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
+=======
+	m_bunny			= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
+>>>>>>> 475a493c54406e2bd9d65a7a0a2e94f51751387b
 	m_modelShader		= new Shader("./shaders/model.vert", "./shaders/model.frag");
 	// SOULSPEAR
 	m_SoulSpear			= GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
