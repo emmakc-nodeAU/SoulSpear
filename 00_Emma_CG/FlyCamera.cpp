@@ -53,14 +53,20 @@ void FlyCamera::Update(float deltaTime)
 	{
 		rotAmount.y		+= glm::pi<float>() * 0.6f * deltaTime;
 		glm::vec4 vUp	= m_viewTransform * glm::vec4(0, 1, 0, 0);
-		yRot			= glm::rotate(rotAmount.y, glm::vec3(vUp.x, vUp.y, vUp.z));
+		yRot			= glm::rotate(rotAmount.y, glm::vec3(
+			vUp.x, 
+			vUp.y, 
+			vUp.z));
 	}
 	// ARROW RIGHT ROTATE
 	if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		rotAmount.y		-= glm::pi<float>() * 0.6f * deltaTime;
 		glm::vec4 vUp	= m_viewTransform * glm::vec4(0, 1, 0, 0);
-		yRot			= glm::rotate(rotAmount.y, glm::vec3(vUp.x, vUp.y, vUp.z));
+		yRot			= glm::rotate(rotAmount.y, glm::vec3(
+			vUp.x, 
+			vUp.y, 
+			vUp.z));
 	}
 
 	// UPDATE ARROWS for TRANSFORM

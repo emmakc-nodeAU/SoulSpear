@@ -4,6 +4,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <vector>
+#include <stb_image.h>
 #include "RenderModel.h"
 
 namespace aie
@@ -11,6 +12,7 @@ namespace aie
 	class Texture;
 }
 
+class Quaternions;
 class Camera;
 class Shader;
 class RenderData;
@@ -51,7 +53,14 @@ public:
 	virtual void draw();
 
 	std::vector<OpenGLInfo> m_glInfo;
-
+	
+	// TEXTURE
+	//void genTexture();
+	//unsigned int m_text;
+	//unsigned int m_program;
+	//unsigned int m_vao;
+	//unsigned int m_vbo;
+	//unsigned int m_ibo;
 	// GIZMOS ------------------------------------
 	//void CreateGrid();
 	//void DestroyGrid();
@@ -86,15 +95,18 @@ protected:
 	Shader*		m_modelShader;
 
 	std::vector<RenderData*> m_SoulSpear;
-	Shader		*m_shaderSoulSpear;
-	Shader		*m_shaderProgram;
+	Shader*		m_shaderSoulSpear;
+	Shader*		m_shaderProgram;
 	unsigned int m_projectionViewLoc;
 
-	// LIGHTING
+	// LIGHTING -----------------------------------
 	Shader*		m_lightingShader;
 	//unsigned	int modelTemp;
 	glm::vec3	m_lightPosition		= glm::vec3(0, 3, 0);
 	glm::vec3	m_lightColour		= glm::vec3(1, 0.8, 0.8);
 	float		m_ambientStrength	= 0.1f;
 
+	// PARTICLES ---------------------------------
+	ParticlesEmitter* m_emitter;
+	Shader*		m_particleShaderProgramID;
 };

@@ -31,8 +31,10 @@ namespace GeometryHelper
 	//	float height, 
 	//	glm::vec4 colour);
 	//
-	//RenderData* CreateQuad(
+	//RenderData* CreateQuad
+	//(
 	//	float width, 
 	//	float height, 
-	//	glm::vec3 facingDirection);
+	//	glm::vec3 facingDirection
+	//);
 };

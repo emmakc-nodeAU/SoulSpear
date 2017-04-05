@@ -92,54 +92,52 @@ void Camera::UpdateFrustrumPlanes()
 	glm::mat4& projView = GetProjectionView();
 	// Right Side
 	m_frustrumPlanes[0] = glm::vec4(
-	projView[0][3] - projView[0][[0]
-	projView[1][3] - projView[1][[0]
-	projView[2][3] - projView[2][[0]
-	projView[3][3] - projView[3][[0])
+	projView[0][3] - projView[0][0]
+	projView[1][3] - projView[1][0]
+	projView[2][3] - projView[2][0]
+	projView[3][3] - projView[3][0])
 
 	// Left Side
 	m_frustrumPlanes[1] = glm::vec4(
-	projView[0][3] + projView[0][[0]
-	projView[1][3] + projView[1][[0]
-	projView[2][3] + projView[2][[0]
-	projView[3][3] + projView[3][[0])
+	projView[0][3] + projView[0][0]
+	projView[1][3] + projView[1][0]
+	projView[2][3] + projView[2][0]
+	projView[3][3] + projView[3][0])
 
 	// Top Side
 	m_frustrumPlanes[2] = glm::vec4(
-	projView[0][3] - projView[0][[1]
-	projView[1][3] - projView[1][[1]
-	projView[2][3] - projView[2][[1]
-	projView[3][3] - projView[3][[1])
+	projView[0][3] - projView[0][1]
+	projView[1][3] - projView[1][1]
+	projView[2][3] - projView[2][1]
+	projView[3][3] - projView[3][1])
 	
 	// Bottom Side
 	m_frustrumPlanes[3] = glm::vec4(
-	projView[0][3] + projView[0][[1]
-	projView[1][3] + projView[1][[1]
-	projView[2][3] + projView[2][[1]
-	projView[3][3] + projView[3][[1])
+	projView[0][3] + projView[0][1]
+	projView[1][3] + projView[1][1]
+	projView[2][3] + projView[2][1]
+	projView[3][3] + projView[3][1])
 	
 	// Far Side
 	m_frustrumPlanes[4] = glm::vec4(
-	projView[0][3] - projView[0][[2]
-	projView[1][3] - projView[1][[2]
-	projView[2][3] - projView[2][[2]
-	projView[3][3] - projView[3][[2])
+	projView[0][3] - projView[0][2]
+	projView[1][3] - projView[1][2]
+	projView[2][3] - projView[2][2]
+	projView[3][3] - projView[3][2])
 	
 	// Near Side
 	m_frustrumPlanes[5] = glm::vec4(
-	projView[0][3] + projView[0][[2]
-	projView[1][3] + projView[1][[2]
-	projView[2][3] + projView[2][[2]
-	projView[3][3] + projView[3][[2])
+	projView[0][3] + projView[0][2]
+	projView[1][3] + projView[1][2]
+	projView[2][3] + projView[2][2]
+	projView[3][3] + projView[3][2])
 };
 
-// Plane normalisation: Normalise, cast to vec4, w=0
+ Plane normalisation: Normalise, cast to vec4, w=0
 for (int i = 0; i < 6; i++)
 {
 	float d = glm::length(m_frustrumPlanes[[i]);
 	m_frustrumPlanes[i] /= d;
-}
-
 }
 
 // SET

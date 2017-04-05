@@ -13,15 +13,29 @@ void Camera::setPosition(const glm::vec3 & pos)
 	updateViewFromWorld();
 }
 
-void Camera::lookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 worldUp)
+void Camera::lookAt(
+	glm::vec3 eye, 
+	glm::vec3 center, 
+	glm::vec3 worldUp)
 {
-	m_viewTransform = glm::lookAt(eye, center, worldUp);
+	m_viewTransform = glm::lookAt(
+		eye, 
+		center, 
+		worldUp);
 	updateWorldFromView();
 }
 
-void Camera::setPerspective(float vFOV, float aspectRatio, float nearDistance, float farDistance)
+void Camera::setPerspective(
+	float vFOV, 
+	float aspectRatio, 
+	float nearDistance, 
+	float farDistance)
 {
-	m_projectionTransform = glm::perspective(vFOV, aspectRatio, nearDistance, farDistance);
+	m_projectionTransform = glm::perspective(
+		vFOV, 
+		aspectRatio, 
+		nearDistance, 
+		farDistance);
 }
 
 void Camera::updateViewFromWorld()

@@ -150,8 +150,8 @@ namespace GeometryHelper
 		//return nullptr;
 	//}
 
-	//RenderData * GeometryHelper::CreateQuad(float width, float height, glm::vec3 facingDirection)
-	//{
-	//	return nullptr;
-	//}
+//RenderData * GeometryHelper::CreateQuad(float width, float height, glm::vec3 facingDirection)
+//	{
+//		return nullptr;
+//	}
 

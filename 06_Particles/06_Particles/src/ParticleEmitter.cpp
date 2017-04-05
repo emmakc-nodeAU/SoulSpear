@@ -1,5 +1,6 @@
 #include "ParticleEmitter.h"
 #include <gl_core_4_4.h>
+#include <glm\glm.hpp>
 
 ParticleEmitter::ParticleEmitter() 
 	: m_particles(nullptr),

@@ -11,6 +11,8 @@
 #include "GeometryHelper.h"
 #include <gl_core_4_4.h>
 #include <imgui.h>
+#include <glfw3.h>
+#include "ParticlesEmitter.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -41,7 +43,6 @@ bool Application3D::startup() {
 	//	glm::pi<float>() * 0.25f, 16.0f / 9.0f, 0.1f, 1000.0f);
 
 	// CAMERA - Upgrading to FlyCamera, from virtual camera -------
-	// GLFW Window
 	m_camera = new FlyCamera(m_window, 5.0f);
 	m_camera->setPerspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
@@ -54,12 +55,66 @@ bool Application3D::startup() {
 		glm::vec3(0, 1, 0)
 	);
 	
+	// TEXTURE
+	//int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+	//unsigned char* data = stbi_load("./textures/box_512x512.jpg", &imageWidth, &imageHeight, &imageFormat, STBI_default);
+	//glGenTextures(1, &m_text);
+	//glBindTexture(GL_TEXTURE_2D, m_text);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//stbi_image_free(data);
+	//const char* vsSource = "#version 410\n\n \
+	//						layout(location = 0) in vec4 position; \
+	//						layout(location = 1) in vec2 texCoord; \
+	//						out vec2 vTexCoord;					   \
+	//						uniform mat4 projectionViewWorldMatrix;   \
+	//						void main()							   \
+	//						{vTexCoord = texCoord; \
+	//						gl_Position = projectionViewWorldMatrix * \
+	//						position; \
+	//						}";
+	//
+	//const char* fsSource = "#version 410\n\n \
+	//						in vec2 vTexCoord; \
+	//						out vec4 fragColor; \
+	//						uniform sampler2D diffuse; \
+	//						void main() \
+	//						{ fragColor = texture(diffuse, vTexCoord); }\
+	//						";
+	//unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	//glShaderSource(vertexShader, 1, (const char**)&vsSource, 0);
+	//glCompileShader(vertexShader);
+	//
+	//unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	//glShaderSource(fragmentShader, 1, (const char**)&fsSource, 0);
+	//glCompileShader(fragmentShader);
+	//
+	//m_program = glCreateProgram();
+	//glAttachShader(m_program, vertexShader);
+	//glAttachShader(m_program, fragmentShader);
+	//glLinkProgram(m_program);
+	//
+	//int success = 0;
+	//glGetProgramiv(m_program, GL_LINK_STATUS, &success);
+	//if (success == GL_FALSE)
+	//{
+	//	int infoLogLength = 0;
+	//	glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &infoLogLength);
+	//	char* infoLog = new char[infoLogLength];
+	//	glGetProgramInfoLog(m_program, infoLogLength, 0, infoLog);
+	//	printf("Error: Failed to link shader program!\n");
+	//	printf("%s\n", infoLog); delete[] infoLog;
+	//}
+	//glDeleteShader(vertexShader);
+	//glDeleteShader(fragmentShader);
+	//genTexture();
+
 	// LIGHTING - Initialise Shader --------------------------------------------------
 	m_lightingShader	= new Shader("./shaders/lighting.vert", "./shaders/lighting.frag");
 	m_shaderProgram		= new Shader("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag");
 	
 	// GIZMOS - GRID: Initialise Shader ----------------------------------------------
-//	m_gridRenderData	= GeometryHelper::CreateGrid(10,10,10,10, glm::vec4(1,0,0,1));
 	// Link to Shader
 	m_gridShader		= new Shader("./shaders/grid.vert", "./shaders/grid.frag");
 	// Link to Texture
@@ -70,11 +125,21 @@ bool Application3D::startup() {
 
 	// MODELS - Initialise Model and Shader ------------------------------------------
 	// BUNNY
-	//m_bunny			= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
-	//m_modelShader		= new Shader("./shaders/model.vert", "./shaders/model.frag");
+	m_bunny				= GeometryHelper::loadObjFromFile("./models/stanford/Bunny.obj");
+	m_modelShader		= new Shader("./shaders/model.vert", "./shaders/model.frag");
 	// SOULSPEAR
 	m_SoulSpear			= GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear	= new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
+
+	// PARTICLES - Initialise
+	m_emitter = new ParticlesEmitter();
+	m_emitter->initalise(1000, 5000,
+		0.1f, 1.0f,
+		1, 5,
+		1, 0.1f,
+		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
+	m_particleShaderProgramID = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
 
 	return true;
 }
@@ -90,6 +155,7 @@ void Application3D::shutdown() {
 	delete m_texture;
 	
 	// DELETE: SHADERS-------------
+	delete m_shaderSoulSpear;
 	delete m_modelShader;
 	delete m_gridShader;
 	delete m_lightingShader;
@@ -149,6 +215,9 @@ void Application3D::update(float deltaTime) {
 	// IMGUI Controls	-------------------------------------------
 	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
 	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
+
+	// PARTICLES		-------------------------------------------
+	m_emitter->update(deltaTime, m_camera->getTransform());
 }
 
 void Application3D::draw() {
@@ -165,6 +234,21 @@ void Application3D::draw() {
 	// CAMERA - TRANSFORM PROJECTION (Perspective) ----------------
 	Gizmos::draw(m_camera->getProjectionView());
 	
+	// TEXTURES Test
+	//glUseProgram(m_program);
+	//
+	//int loc = glGetUniformLocation(m_program, "projectionViewWorldMatrix");
+	//glUniformMatrix4fv(loc, 1, GL_FALSE, &(m_camera->getProjectionView()[0][0]));
+	//
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, m_text);
+	//
+	//loc = glGetUniformLocation(m_program, "diffuse");
+	//glUniform1i(loc, 0);
+	//
+	//glBindVertexArray(m_vao);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
 	// GIZMOS GRID - Shader ---------------------------------------
 	glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
 	glUseProgram(m_gridShader->GetProgramID());
@@ -305,3 +389,42 @@ void Vertex::SetupVertexAttribPointers()
 		(void*)(sizeof(float) * 10)	// Offset - Bytes from beginning of the vertex(position 4f, colour 4f, uv 2f, normals at 10)
 	);
 }
+//void Application3D::genTexture()
+//{
+//	float vertexData[] =
+//	{
+//		-5, 0, 5, 1, 0 ,1,
+//		5, 0, 5, 1, 1, 1,
+//		5, 0, -5, 1, 1, 0,
+//		-5, 0, -5, 1, 0, 0,
+//	};
+//
+//	unsigned int indexData[] =
+//	{
+//		0, 1, 2,
+//		0, 2, 3,
+//	};
+//
+//	glGenVertexArrays(1, &m_vao);
+//	glBindVertexArray(m_vao);
+//
+//	glGenBuffers(1, &m_vbo);
+//	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+//	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4,
+//		vertexData, GL_STATIC_DRAW);
+//
+//	glGenBuffers(1, &m_ibo);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6,
+//		indexData, GL_STATIC_DRAW);
+//
+//	glEnableVertexAttribArray(0);
+//	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
+//		sizeof(float) * 6, 0);
+//	glEnableVertexAttribArray(1);
+//	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+//		sizeof(float) * 6, ((char*)0) + 16);
+//
+//	glBindVertexArray(0);
+//
+//}
