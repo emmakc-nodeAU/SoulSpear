@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <iostream>
-#include "GameMessages.h"
+#include <GameMessages.h>
 
 using glm::vec3;
 using glm::vec4;
@@ -123,6 +123,7 @@ void Client::handleNetworkMessages()
 			break;
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 			std::cout << "Our connection request has been accepted. \n";
+			chatMessages();
 			break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
 			std::cout << "The server is full. \n";
@@ -152,12 +153,15 @@ void Client::handleNetworkMessages()
 
 void Client::chatMessages()
 {
-	RakNet::Packet* packet;
+	RakNet::BitStream bs;
+	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_TEXT_MESSAGE);
+	
+	RakNet::RakString str("Hello from client!");
+	bs.Write(str);
 
-	for (packet = m_pPeerInterface->Send(); packet;
-		m_pPeerInterface->AllocatePacket(packet),
-		packet = m_pPeerInterface->Send())
-	{
-	}
+	m_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+		RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+
+
 }
 

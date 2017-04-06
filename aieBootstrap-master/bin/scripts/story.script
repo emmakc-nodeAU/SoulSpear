@@ -1,0 +1,40 @@
+SET_SPRITE adventurer
+SET_STATE idle
+WAIT 1
+SET_STATE talking
+SPEAK 2 CHAAAAAAAAAARGE!
+WAIT 2
+SET_SPRITE zombie
+SET_STATE hurt
+SPEAK 2 Hey, wait a moment!
+WAIT 2
+SPEAK 1 Why are you trying
+SPEAK 2 to hurt me?!?
+WAIT 2
+SPEAK 2 I haven't hurt anyone..
+WAIT 2
+SPEAK 1 I'm just here, 
+SPEAK 4 minding my own business.
+SET_SPRITE female
+SET_STATE talking
+WAIT 2
+SPEAK 2 He's right you know!
+WAIT 1
+SET_SPRITE adventurer
+SPEAK 2 But...what else can I do?
+WAIT 1
+SET_SPRITE female
+SPEAK 1 Go home and
+SPEAK 2 leave him alone?
+WAIT 1
+SET_SPRITE zombie
+SPEAK 2 Yeah, what she said!
+WAIT 1
+SET_SPRITE adventurer
+SET_STATE hurt
+WAIT 2
+SPEAK 2 ..Oh..Okay then
+WAIT 1
+SET_STATE face_back
+SPEAK 2 ..Guess I'll be going..
+SPEAK 10 THE END!

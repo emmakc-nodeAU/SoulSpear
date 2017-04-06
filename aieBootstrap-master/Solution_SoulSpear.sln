@@ -60,6 +60,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "99_Client", "..\Client\Clie
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "99_Server", "..\Server\Server.vcxproj", "{7D0549B9-95F3-4D0C-AAE0-87071A6D5C3E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScriptingProject", "..\..\Complex Game Systems\3 Scripting\ScriptingProject\scripingProject\ScriptingProject.vcxproj", "{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -160,6 +162,12 @@ Global
 		{7D0549B9-95F3-4D0C-AAE0-87071A6D5C3E}.Release|x64.Build.0 = Release|x64
 		{7D0549B9-95F3-4D0C-AAE0-87071A6D5C3E}.Release|x86.ActiveCfg = Release|Win32
 		{7D0549B9-95F3-4D0C-AAE0-87071A6D5C3E}.Release|x86.Build.0 = Release|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Debug|x64.ActiveCfg = Debug|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Debug|x86.ActiveCfg = Debug|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Debug|x86.Build.0 = Debug|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Release|x64.ActiveCfg = Release|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Release|x86.ActiveCfg = Release|Win32
+		{59D6B3AF-19A9-48A7-B939-8D6F5E161F30}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,6 +49,17 @@ int main()
 			case ID_CONNECTION_LOST:
 				std::cout << "A client lost the connection. \n";
 				break;
+			case ID_CLIENT_TEXT_MESSAGE:
+				{
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+
+				RakNet::RakString str;
+				bsIn.Read(str);
+
+				std::cout << "Client says: " << str.C_String() << std::endl;
+				}
+				break;
 			default:
 				std::cout << "Receive a message with unknown id: " << packet->data[0];
 				break;

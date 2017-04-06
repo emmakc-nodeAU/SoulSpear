@@ -9,7 +9,8 @@
 enum GameMessages
 {
 	// CREATE: Packet ID's derived from the server
-	ID_SERVER_TEXT_MESSAGE = ID_USER_PACKET_ENUM + 1
+	ID_SERVER_TEXT_MESSAGE = ID_USER_PACKET_ENUM + 1,
+	ID_CLIENT_TEXT_MESSAGE
 };
 
 // GAME MESSAGES

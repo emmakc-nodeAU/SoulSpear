@@ -1,0 +1,9 @@
+﻿  ScriptedCharacterController.cpp
+c:\users\s171410\documents\emma_programming\complex game systems\3 scripting\scriptingproject\scripingproject\scriptedcharactercontroller.cpp(79): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\s171410\documents\emma_programming\complex game systems\3 scripting\scriptingproject\scripingproject\scriptedcharactercontroller.cpp(92): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\s171410\documents\emma_programming\complex game systems\3 scripting\scriptingproject\scripingproject\scriptedcharactercontroller.cpp(96): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  Compiling...
+  ScriptingApplication.cpp
+  Generating Code...
+LINK : fatal error LNK1104: cannot open file 'bootstrap.lib'

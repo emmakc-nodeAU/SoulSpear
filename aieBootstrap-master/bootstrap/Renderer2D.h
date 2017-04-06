@@ -50,6 +50,12 @@ public:
 	// this is usefull for center alligning text.
 	float measureTextWidth(Font *font, const char *text);
 
+	// CUSTOM EDITION: Added getRender subsequent to AIE Update: MattDodd
+	float getRenderColorR() const { return m_r; }
+	float getRenderColorG() const { return m_g; }
+	float getRenderColorB() const { return m_b; }
+	float getRenderColorA() const { return m_a; }
+
 protected:
 
 	// helper methods used during drawing
