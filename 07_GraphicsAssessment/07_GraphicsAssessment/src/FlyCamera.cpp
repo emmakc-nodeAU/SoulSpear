@@ -14,7 +14,7 @@ FlyCamera::FlyCamera(GLFWwindow * window, float speed)
 
 void FlyCamera::Update(float deltaTime)
 {
-	glm::mat4 transform = GetTransform();
+	glm::mat4 transform = getTransform();
 	glm::vec3 vRight	= glm::vec3(transform[0]);
 	glm::vec3 vUp		= glm::vec3(transform[1]);
 	glm::vec3 vForward	= glm::vec3(transform[2]);
@@ -50,7 +50,7 @@ void FlyCamera::Update(float deltaTime)
 	if (glm::length(moveDirection) > 0.0f)
 	{
 		transform[3] += glm::vec4(moveDirection * deltaTime, 1);
-		SetTransform(transform);
+		setTransform(transform);
 	}
 	
 	if (glfwGetKey(m_window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
@@ -105,16 +105,16 @@ void FlyCamera::getDirectionRotation(double deltaTime, double xPos, double yPos)
 	if (yPos != 0.0f)
 	{
 		glm::mat4 rot = glm::rotate((float)(m_rotate * deltaTime * yPos), glm::vec3(1, 0, 0));
-		SetTransform(GetTransform()*rot);
+		setTransform(getTransform()*rot);
 	}
 
 	if (xPos != 0.0f)
 	{
 		glm::mat4 rot = glm::rotate((float)(m_rotate * deltaTime * yPos), glm::vec3(0, 1, 0));
-		SetTransform(GetTransform()*rot);
+		setTransform(getTransform()*rot);
 	}
 
-	glm::mat4 oldTrans = GetTransform();
+	glm::mat4 oldTrans = getTransform();
 	glm::mat4 trans;
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
 
@@ -130,5 +130,5 @@ void FlyCamera::getDirectionRotation(double deltaTime, double xPos, double yPos)
 
 	// POSITION
 	trans[2] = oldTrans[3];
-	SetTransform(trans);
+	setTransform(trans);
 }

@@ -1,11 +1,11 @@
 #pragma once
 #include <glm\glm.hpp>
 #include <glm\ext.hpp>
-#include "Camera_AIE_ClassicModel.h"
+#include "Camera.h"
 
 struct GLFWwindow;
 
-class FlyCamera : public Camera_AIE_ClassicModel
+class FlyCamera : public Camera
 {
 public:
 	FlyCamera(GLFWwindow* window, float speed);
