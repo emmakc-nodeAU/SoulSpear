@@ -49,7 +49,12 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
-	void RenderMesh(GLMesh *mesh, glm::vec3 &position, glm::vec3 &scale, glm::vec3 materialsColour, aie::Texture *diffuseTexture);
+	void RenderMesh(
+		GLMesh *mesh, 
+		glm::vec3 &position, 
+		glm::vec3 &scale, 
+		glm::vec3 materialsColour, 
+		aie::Texture *diffuseTexture);
 
 	void CreateCube();
 	void DestroyCube();
@@ -70,7 +75,6 @@ protected:
 	Shader *m_shaderSoulSpear;
 
 	Shader *m_shaderProgram;
-	//unsigned int m_shader;				// Program(Vertex, Fragment Shaders)
 	unsigned int m_projectionViewLoc;
 
 	// CUBE: TEXTURE

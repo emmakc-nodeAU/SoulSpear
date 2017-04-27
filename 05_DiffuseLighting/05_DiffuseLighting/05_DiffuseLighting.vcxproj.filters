@@ -33,9 +33,6 @@
     <ClCompile Include="src\RenderData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SphereBoundingVolume.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\Camera.h">
@@ -53,7 +50,7 @@
     <ClInclude Include="inc\RenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SphereBoundingVolume.h">
+    <ClInclude Include="inc\SphereBoundingVolume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

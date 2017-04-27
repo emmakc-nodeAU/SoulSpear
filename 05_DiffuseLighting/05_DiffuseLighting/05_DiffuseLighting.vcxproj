@@ -92,7 +92,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SphereBoundingVolume.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GeometryHelper.cpp" />
     <ClCompile Include="src\RenderData.cpp" />
@@ -106,7 +105,7 @@
     <ClInclude Include="inc\RenderData.h" />
     <ClInclude Include="inc\Shader.h" />
     <ClInclude Include="inc\DiffuseLightingApp.h" />
-    <ClInclude Include="SphereBoundingVolume.h" />
+    <ClInclude Include="inc\SphereBoundingVolume.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
