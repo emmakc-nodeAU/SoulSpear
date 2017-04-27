@@ -51,7 +51,12 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
-	void RenderMesh(GLMesh *mesh, glm::vec3 &position, glm::vec3 &scale, glm::vec3 materialsColour, aie::Texture *diffuseTexture);
+	void RenderMesh(
+		GLMesh *mesh, 
+		glm::vec3 &position, 
+		glm::vec3 &scale, 
+		glm::vec3 materialsColour, 
+		aie::Texture *diffuseTexture);
 
 	void CreateCube();
 	void DestroyCube();
@@ -65,17 +70,11 @@ public:
 protected:
 
 	// CAMERA
-	// camera transforms
 	Camera *m_camera;
-	//glm::mat4 m_viewMatrix;
-	//glm::mat4 m_projectionMatrix;
-
 	GLMesh m_skybox;
 
 	Shader *m_shaderProgram;
-	//unsigned int m_shader;	// Program(Vertex, Fragment Shaders)
 	unsigned int m_projectionViewLoc;
-
 
 	// SOULSPEAR-------------------------------
 		// Object
@@ -86,13 +85,10 @@ protected:
 	aie::Texture *m_SoulSpearDiffuse;
 	aie::Texture *m_SoulSpearNormal;
 	aie::Texture *m_SoulSpearSpecular;
-	// ------------------------------------------
-
 
 	// PARTICLES---------------------------------
 	ParticleEmitter *m_emitter;
 	Shader*	m_shaderParticles;
-
 
 	// CUBE--------------------------------------
 		// Object

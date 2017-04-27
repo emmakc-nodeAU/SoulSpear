@@ -59,9 +59,11 @@ bool GraphicsAssessment::startup() {
 	// SOUL SPEAR
 	m_SoulSpear = GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
-	m_SoulSpearDiffuse = new aie::Texture("./models/soulspear/soulspear_diffuse.tga");	// PARTICLES
-
-	m_emitter = new ParticleEmitter();
+	m_SoulSpearDiffuse = new aie::Texture("./models/soulspear/soulspear_diffuse.tga");	
+	m_SoulSpearNormal = new aie::Texture("./models/soulspear/soulspear_normal.tga");
+	m_SoulSpearSpecular = new aie::Texture("./models/soulspear/soulspear_specular.tga");
+	// PARTICLES
+		m_emitter = new ParticleEmitter();
 	m_emitter->initalise(100, 500,
 		0.1f, 1.0f,
 		1, 5,
@@ -618,11 +620,11 @@ void GraphicsAssessment::soulSpear()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_SoulSpearDiffuse->getHandle());
 
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, m_SoulSpearNormal->getHandle());
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_SoulSpearNormal->getHandle());
 
-	//glActiveTexture(GL_TEXTURE2);
-	//glBindTexture(GL_TEXTURE_2D, m_SoulSpearSpecular->getHandle());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_SoulSpearSpecular->getHandle());
 
 	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "myTextureSampler");
 	//assert(loc != -1);
