@@ -5,7 +5,7 @@
 
 
 FlyCamera::FlyCamera(GLFWwindow * window, float speed)
-	: m_speed(speed)
+	: m_speed(speed + 50.0f)
 	, m_rotate(glm::pi<float>() * 0.05f)
 	, m_window(window)
 {
@@ -65,13 +65,13 @@ void FlyCamera::mouseInput(double deltaTime)
 	glm::vec3 position = glm::vec3(0, 0, 5);
 	float horizontalAngle = glm::pi<float>() * 0.25f;
 	float verticleAngle = 0.0f;
-	float mouseSpeed = 0.005f;
+	float mouseSpeed = 5.0f;
 
 	double xPos, yPos;
 
 	int windowWidth, windowHeight;
 	glfwGetCursorPos(m_window, &xPos, &yPos);
-	// Locks Mouse position to middle
+	// Locks Mouse position to middle????????????????????????????????????????????????????
 	glfwSetCursorPos(m_window, windowWidth / 2, windowHeight / 2);
 
 	float xOffset = windowWidth / 2 - xPos;
@@ -79,8 +79,6 @@ void FlyCamera::mouseInput(double deltaTime)
 
 	horizontalAngle += mouseSpeed * deltaTime * xOffset;
 	verticleAngle += mouseSpeed * deltaTime * yOffset;
-
-
 
 	if (xOffset > 0)
 		int i = 0;
