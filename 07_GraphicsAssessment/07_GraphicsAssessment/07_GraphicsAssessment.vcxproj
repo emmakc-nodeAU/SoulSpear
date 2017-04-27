@@ -93,8 +93,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="inc\PostProcessing.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\FlyCamera.cpp" />
-    <ClCompile Include="src\Camera_AIE_ClassicModel.cpp" />
     <ClCompile Include="src\ParticleEmitter.cpp" />
     <ClCompile Include="src\GeometryHelper.cpp" />
     <ClCompile Include="src\RenderData.cpp" />
@@ -103,6 +103,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\GeometryHelper.h" />
     <ClInclude Include="inc\PostProcessing.h" />
     <ClInclude Include="inc\RenderData.h" />
@@ -110,7 +111,6 @@
     <ClInclude Include="inc\GraphicsAssessment.h" />
     <ClInclude Include="inc\SphereBoundingVolume.h" />
     <ClInclude Include="inc\ParticleEmitter.h" />
-    <ClInclude Include="inc\Camera_AIE_ClassicModel.h" />
     <ClInclude Include="inc\FlyCamera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -12,7 +12,7 @@ namespace aie
 }
 class RenderData;
 class Shader;
-class Camera_AIE_ClassicModel;
+class Camera;
 class ParticleEmitter;
 class PostProcessing;
 
@@ -123,7 +123,7 @@ protected:
 	//glm::vec3 m_floorColour = glm::vec3(1, 0, 0);
 
 	// camera transforms
-	Camera_AIE_ClassicModel *m_camera;
+	Camera *m_camera;
 
 	// POST PROCESSING
 	PostProcessing* m_postprocessing;

@@ -1,20 +1,3 @@
-/*
--------------------------------------------------------------------------
-INSTRUCTIONS:
--------------------------------------------------------------------------
-STEP 1: Generate Geometry
-		Create buffers on GPU and populate with data.
-
-STEP 2: Load a shader program
-		See LoadShader method
-
-STEP 3:	Each frame - Render Geometry (using shader program)
-		See DrawGeometry method
-
-STEP 4:	Unload Shader and Geometry
--------------------------------------------------------------------------
-*/
-
 #include "GraphicsAssessment.h"
 #include "Gizmos.h"
 #include "Input.h"
@@ -53,11 +36,11 @@ bool GraphicsAssessment::startup() {
 
 	// CAMERA
 	m_camera = new FlyCamera(m_window, 5.0f);
-	m_camera->SetPerspective(glm::pi<float>() * 0.25f,
+	m_camera->setPerspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.0f);
 
-	m_camera->LookAt(glm::vec3(10, 10, 10),
+	m_camera->lookAt(glm::vec3(10, 10, 10),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0));
 
@@ -131,7 +114,7 @@ void GraphicsAssessment::update(float deltaTime) {
 	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
 
 	// PARTICLES
-	m_emitter->update(deltaTime, m_camera->GetTransform());
+	m_emitter->update(deltaTime, m_camera->getTransform());
 
 	// CAMERA
 	m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
@@ -170,7 +153,7 @@ void GraphicsAssessment::draw() {
 		0.1f, 1000.0f);
 
 	// CAMERA
-	Gizmos::draw(m_camera->GetProjectionView());
+	Gizmos::draw(m_camera->getProjectionView());
 	//glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
 
 	// POST PROCESSING:
@@ -183,7 +166,7 @@ void GraphicsAssessment::draw() {
 	// REFLECTION OBJECTS TO RENDER HERE:
 	soulSpear();
 
-	Gizmos::draw(m_camera->GetProjectionView());
+	Gizmos::draw(m_camera->getProjectionView());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 1280, 720);
 
@@ -193,7 +176,7 @@ void GraphicsAssessment::draw() {
 	glUseProgram(m_shaderPostProcessing->GetProgramID());
 
 	int loc = glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "projectionViewMatrix");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &(m_camera->GetProjectionView()[0][0]));
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &(m_camera->getProjectionView()[0][0]));
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_postprocessing->m_fboTexture);
 	glUniform1i(glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "diffuse"), 0);
@@ -217,7 +200,7 @@ void GraphicsAssessment::draw() {
 	// PARTICLES - BIND SHADERS
 	glUseProgram(m_shaderParticles->GetProgramID());
 	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
-	glUniformMatrix4fv(loc, 1, false, &(m_camera->GetProjectionView()[0][0]));
+	glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
 
 	m_emitter->draw();
 
