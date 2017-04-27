@@ -1,20 +1,3 @@
-/*
--------------------------------------------------------------------------
-INSTRUCTIONS:
--------------------------------------------------------------------------
-STEP 1: Generate Geometry
-		Create buffers on GPU and populate with data.
-
-STEP 2: Load a shader program
-		See LoadShader method
-
-STEP 3:	Each frame - Render Geometry (using shader program)
-		See DrawGeometry method
-
-STEP 4:	Unload Shader and Geometry
--------------------------------------------------------------------------
-*/
-
 #include "DiffuseLightingApp.h"
 #include "Gizmos.h"
 #include "Input.h"
