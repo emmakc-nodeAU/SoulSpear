@@ -49,8 +49,8 @@ bool RenderingGeometryApp::startup() {
 
 	// CAMERA
 	m_camera = new Camera();
-	m_camera->setPosition();
-	m_camera->lookAt();
+	m_camera->setPosition(glm::vec3(10, 30, 0));
+	m_camera->lookAt(glm::vec3(0, 0, 0), glm::vec3(10, 10, 10), glm::vec3(0, 1, 0));
 	m_camera->getProjection();
 
 	// TEXTURE

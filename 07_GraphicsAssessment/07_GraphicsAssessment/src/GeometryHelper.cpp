@@ -48,7 +48,7 @@ namespace GeometryHelper
 					if (attribs.texcoords.size() > 0)
 					{
 						v.u = attribs.texcoords[2 * idx.texcoord_index + 0];
-						v.v = attribs.texcoords[2 * idx.texcoord_index + 1];
+						v.v = 1 - attribs.texcoords[2 * idx.texcoord_index + 1];
 					}
 					vertices.push_back(v);
 				}

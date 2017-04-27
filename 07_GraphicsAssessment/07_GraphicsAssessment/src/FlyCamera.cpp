@@ -50,6 +50,7 @@ void FlyCamera::Update(float deltaTime)
 	if (glm::length(moveDirection) > 0.0f)
 	{
 		transform[3] += glm::vec4(moveDirection * deltaTime, 1);
+		transform[3].w = 1;
 		setTransform(transform);
 	}
 	

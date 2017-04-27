@@ -60,10 +60,9 @@ private:
 	// Will be called to recalculate correct Fustrum Planes
 	void updateFustrumPlanes();
 	glm::vec4 m_fustrumPlanes[6];
-	// Fulstrum Cameras
+
+	// CAMERA Transforms
 	glm::mat4 m_worldTransform;
 	glm::mat4 m_viewTransform;
 	glm::mat4 m_projectionTransform;
-
-
 };

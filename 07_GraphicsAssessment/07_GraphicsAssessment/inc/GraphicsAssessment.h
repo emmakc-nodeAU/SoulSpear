@@ -13,8 +13,8 @@ namespace aie
 class RenderData;
 class Shader;
 class Camera;
-//class ParticleEmitter;
-//class PostProcessing;
+class ParticleEmitter;
+class PostProcessing;
 
 struct Vertex
 {
@@ -67,8 +67,8 @@ protected:
 	// CAMERA
 	// camera transforms
 	Camera *m_camera;
-	glm::mat4 m_viewMatrix;
-	glm::mat4 m_projectionMatrix;
+	//glm::mat4 m_viewMatrix;
+	//glm::mat4 m_projectionMatrix;
 
 	GLMesh m_skybox;
 
@@ -90,45 +90,30 @@ protected:
 
 
 	// PARTICLES---------------------------------
-	//ParticleEmitter *m_emitter;
-	//Shader*	m_shaderParticles;
-	// ------------------------------------------
+	ParticleEmitter *m_emitter;
+	Shader*	m_shaderParticles;
 
 
 	// CUBE--------------------------------------
 		// Object
 	GLMesh m_cube;
 		// Texture
-	aie::Texture *m_texture;
-	// ------------------------------------------
-
+	aie::Texture *m_whiteTexture;
 
 	// GRID -------------------------------------
 	GLMesh m_grid;					// Object
-	aie::Texture *m_whiteTexture;	// Texture
+	aie::Texture *m_grass;		// Texture
 	aie::Texture *m_floormap;		// bitmap
 	//aie::Texture *m_heightmap;	// heightmap
-	// ------------------------------------------
-	
 
 	// LIGHTING
 	glm::vec3 m_lightPosition = glm::vec3(0, 3, 0);
 	glm::vec3 m_lightColour = glm::vec3(1, 0.8, 0.8);
 	float m_ambientStrength = 0.1f;
 
-	// SKYBOX
-	//glm::vec3 m_skyboxPosition = glm::vec3(0, 10, 0);
-	//glm::vec3 m_skyboxColour = glm::vec3(1, 0.8, 0.8);
-
-	// FLOOR
-	//glm::vec3 m_floorPosition = glm::vec3(0, 10, 0);
-	//glm::vec3 m_floorColour = glm::vec3(1, 0, 0);
-
-
-
 	// POST PROCESSING
-	//PostProcessing* m_postprocessing;
-	//Shader* m_shaderPostProcessing;
+	PostProcessing* m_postprocessing;
+	Shader* m_shaderPostProcessing;
 	//glm::mat4 projectionView = m_projectionMatrix * m_viewMatrix;
-	//void soulSpear();
+	void soulSpear();
 };

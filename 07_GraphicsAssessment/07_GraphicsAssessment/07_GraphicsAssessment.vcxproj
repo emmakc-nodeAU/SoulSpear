@@ -92,7 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="inc\PostProcessing.cpp" />
+    <ClCompile Include="src\PostProcessing.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\FlyCamera.cpp" />
     <ClCompile Include="src\ParticleEmitter.cpp" />
