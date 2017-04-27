@@ -1,7 +1,10 @@
 #pragma once
-#include <glm\vec3.hpp>
-#include <glm\vec4.hpp>
-#include <glm\mat4x4.hpp>
+//#include <glm\vec3.hpp>
+//#include <glm\vec4.hpp>
+//#include <glm\mat4x4.hpp>
+
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include <glm\gtc\quaternion.hpp>
 #include <glm\gtx\quaternion.hpp>
@@ -11,8 +14,8 @@ struct Particle {
 	glm::vec3 velocity;
 	glm::vec4 colour;
 	float size;
-	float lifetime;
-	float lifespan;
+	float lifeTime;
+	float lifeSpan;
 };
 
 struct ParticleVertex {
@@ -40,7 +43,7 @@ public:
 		const glm::vec4& a_startColour, const glm::vec4& a_endColour);
 
 	// ANIMATING PARTICLES AROUND OBJECTS
-	//void movePosition(glm::vec3 &move);
+	void movePosition(glm::vec3 &move);
 	
 protected:
 	Particle*		m_particles;
@@ -67,6 +70,8 @@ protected:
 	glm::vec4		m_startColour;
 	glm::vec4		m_endColour;
 
+	glm::vec4		m_startColour;
+	glm::vec4		m_endColour;
 
 	// DEAD PARTICLE EMITTER
 	void emit();
