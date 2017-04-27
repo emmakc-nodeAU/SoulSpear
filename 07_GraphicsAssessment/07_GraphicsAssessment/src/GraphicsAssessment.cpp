@@ -44,9 +44,6 @@ bool GraphicsAssessment::startup() {
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0));
 
-	// GEOMETRY
-	CreateCube();
-	CreateGrid();
 
 	// GRID
 	m_texture = new aie::Texture("./textures/grass.png");
@@ -54,26 +51,31 @@ bool GraphicsAssessment::startup() {
 	// CUBE
 	m_whiteTexture = new aie::Texture("./textures/white.png");
 	
+	// SHADER
+	LoadShader();
+	// GEOMETRY
+	CreateCube();
+	CreateGrid();
+
 	// SOUL SPEAR
 	m_SoulSpear = GeometryHelper::loadObjFromFile("./models/soulspear/soulspear.obj");
 	m_shaderSoulSpear = new Shader("./shaders/soulspear.vert", "./shaders/soulspear.frag");
 
-	// SHADER
-	LoadShader();
+
 
 	// PARTICLES
-	m_emitter = new ParticleEmitter();
-	m_emitter->initalise(100, 500,
-		0.1f, 1.0f,
-		1, 5,
-		1, 0.1f,
-		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
-	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
-
-	// POST PROCESSING
-	m_postprocessing = new PostProcessing();
-	m_postprocessing->startup();
-	m_shaderPostProcessing = new Shader("./shaders/PostProcessing.vert", "./shaders/PostProcessing.frag");
+	//m_emitter = new ParticleEmitter();
+	//m_emitter->initalise(100, 500,
+	//	0.1f, 1.0f,
+	//	1, 5,
+	//	1, 0.1f,
+	//	glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	//m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
+	//
+	//// POST PROCESSING
+	//m_postprocessing = new PostProcessing();
+	//m_postprocessing->startup();
+	//m_shaderPostProcessing = new Shader("./shaders/PostProcessing.vert", "./shaders/PostProcessing.frag");
 
 	return true;
 }
@@ -94,13 +96,18 @@ void GraphicsAssessment::shutdown() {
 void GraphicsAssessment::update(float deltaTime) {
 
 	float time = getTime();
-
-	// wipe the gizmos clean for this frame
-	Gizmos::clear();
+	m_camera->Update(deltaTime);
 
 	// LIGHT Orbits around x
 	m_lightPosition.x = glm::cos(time) * 5;
 	m_lightPosition.z = glm::sin(time) * 5;
+
+	// GUI Controls
+	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
+	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
+
+	// wipe the gizmos clean for this frame
+	Gizmos::clear();
 
 	// LIGHT - BALL REPRESENTS THE LIGHT
 		//	position: m_skyboxPosition
@@ -108,17 +115,6 @@ void GraphicsAssessment::update(float deltaTime) {
 		//	size:	16 x 16
 		//	fill colour: m_lightColour cast vec4, vec3+, 1 for transparency
 	Gizmos::addSphere(m_lightPosition, 0.1f, 16, 16, glm::vec4(m_lightColour, 1.0f));
-
-	// GUI Controls
-	ImGui::SliderFloat("AmbientStrength", &m_ambientStrength, 0.0f, 1.0f);
-	ImGui::SliderFloat3("LightColour", &m_lightColour[0], 0.0f, 1.0f);
-
-	// PARTICLES
-	m_emitter->update(deltaTime, m_camera->getTransform());
-
-	// CAMERA
-	m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
-		vec3(0), vec3(0, 1, 0));
 
 	// GRID: Structure with gizmos
 	vec4 white(1);
@@ -134,15 +130,26 @@ void GraphicsAssessment::update(float deltaTime) {
 	// add a transform so that we can see the axis
 	Gizmos::addTransform(mat4(1));
 
+	// PARTICLES
+	//m_emitter->update(deltaTime, m_camera->getTransform());
+
+	// CAMERA
+	//m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
+	//	vec3(0), vec3(0, 1, 0));
+
+
 	// quit if we press escape
 	aie::Input* input = aie::Input::getInstance();
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
-	m_camera->Update(deltaTime);
 }
 
 void GraphicsAssessment::draw() {
+
+	// CAMERA
+	Gizmos::draw(m_camera->getProjectionView());
+	glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
 
 	// wipe the screen to the background colour
 	clearScreen();
@@ -152,37 +159,33 @@ void GraphicsAssessment::draw() {
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.0f);
 
-	// CAMERA
-	Gizmos::draw(m_camera->getProjectionView());
-	//glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
-
 	// POST PROCESSING:
-	glBindFramebuffer(GL_FRAMEBUFFER, m_postprocessing->m_fbo);
-	glViewport(0, 0, 512, 512);
-
-	glClearColor(0.25f, 0.25f, 0.25f, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glBindFramebuffer(GL_FRAMEBUFFER, m_postprocessing->m_fbo);
+	//glViewport(0, 0, 512, 512);
+	//
+	//glClearColor(0.25f, 0.25f, 0.25f, 1);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	// REFLECTION OBJECTS TO RENDER HERE:
-	soulSpear();
+	//soulSpear();
 
-	Gizmos::draw(m_camera->getProjectionView());
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, 1280, 720);
-
-	glClearColor(0.25f, 0.25f, 0.25f, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glUseProgram(m_shaderPostProcessing->GetProgramID());
-
-	int loc = glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "projectionViewMatrix");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &(m_camera->getProjectionView()[0][0]));
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_postprocessing->m_fboTexture);
-	glUniform1i(glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "diffuse"), 0);
-
-	glBindVertexArray(m_postprocessing->m_vao);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	//Gizmos::draw(m_camera->getProjectionView());
+	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glViewport(0, 0, 1280, 720);
+	//
+	//glClearColor(0.25f, 0.25f, 0.25f, 1);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//
+	//glUseProgram(m_shaderPostProcessing->GetProgramID());
+	//
+	//int loc = glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "projectionViewMatrix");
+	//glUniformMatrix4fv(loc, 1, GL_FALSE, &(m_camera->getProjectionView()[0][0]));
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, m_postprocessing->m_fboTexture);
+	//glUniform1i(glGetUniformLocation(m_shaderPostProcessing->GetProgramID(), "diffuse"), 0);
+	//
+	//glBindVertexArray(m_postprocessing->m_vao);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
 	//m_shaderProgram->Enable(); // glUseProgram(m_shader);
@@ -190,7 +193,7 @@ void GraphicsAssessment::draw() {
 	//// Step 2: Calculate projection view matrix, pass into shader program
 	//projectionView = m_projectionMatrix * m_viewMatrix;
 	//glUniformMatrix4fv(m_projectionViewLoc, 1, false, &projectionView[0][0]);
-	//
+	
 	//// Lighting diffuse shader
 	//glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
 	//glUniform3fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightColour"), 1, &m_lightColour[0]); // Light colour
@@ -198,11 +201,11 @@ void GraphicsAssessment::draw() {
 
 	// RENDER PARTICLES
 	// PARTICLES - BIND SHADERS
-	glUseProgram(m_shaderParticles->GetProgramID());
-	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
-	glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
-
-	m_emitter->draw();
+	//glUseProgram(m_shaderParticles->GetProgramID());
+	//loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
+	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
+	//
+	//m_emitter->draw();
 
 	// RENDER CUBE:
 	// Position |  ?  | Colour | Texture
@@ -217,9 +220,11 @@ void GraphicsAssessment::draw() {
 	//RenderMesh(&m_grid, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), m_heightmap);
 	
 	// SHADER: SOULSPEAR
+	// 1. Select Shader Program:
 	glUseProgram(m_shaderSoulSpear->GetProgramID());
-	
-	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "projectionViewWorldMatrix");
+	// 2. Calculate PVM, pass into shader program
+	glm::mat4 projectionView = m_projectionMatrix * m_viewMatrix;
+	int loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "projectionViewWorldMatrix");
 	glUniformMatrix4fv(loc, 1, false, &projectionView[0][0]);
 	
 	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "modelMatrix");
