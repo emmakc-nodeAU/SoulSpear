@@ -4,13 +4,13 @@
 #include <assert.h>
 #include <fstream>
 #include <sstream>
-#include "ParticleEmitter.h"
-#include "GraphicsAssessment.h"
+//#include "ParticleEmitter.h"
+//#include "GraphicsAssessment.h"
 
-Shader::Shader(std::string vertexPath, std::string fragPath)
+Shader::Shader(std::string vertexPath, std::string fragmentPath)
 	: m_programID(-1)
 {
-	MakeShaderProgram(vertexPath, fragPath);
+	MakeShaderProgram(vertexPath, fragmentPath);
 }
 
 Shader::~Shader()
@@ -27,11 +27,11 @@ Shader::Shader(Shader && other)
 	other.m_programID = -1;
 }
 
-void Shader::MakeShaderProgram(std::string vertexPath, std::string fragPath)
+void Shader::MakeShaderProgram(std::string vertexPath, std::string fragmentPath)
 {
 	// Load shaders from disk
 	unsigned int vertexShader = MakeShader(GL_VERTEX_SHADER, vertexPath);
-	unsigned int fragmentShader = MakeShader(GL_FRAGMENT_SHADER, fragPath);
+	unsigned int fragmentShader = MakeShader(GL_FRAGMENT_SHADER, fragmentPath);
 	
 	assert(vertexShader != -1 && fragmentShader != -1);
 
@@ -52,22 +52,19 @@ void Shader::MakeShaderProgram(std::string vertexPath, std::string fragPath)
 		char* infoLog = new char[infoLogLength];
 		glGetProgramInfoLog(m_programID, infoLogLength, 0, infoLog);
 		std::cout << "Error trying to link shaders (" << vertexPath
-			<< ", " << fragPath << "):\n";
-		std::cout << infoLog;
-
-		delete[] infoLog;
-
+			<< ", " << fragmentPath << "):\n";
+		std::cout << infoLog << 'n';
 		assert(false && "Shader failed to compile correctly!");
+		delete[] infoLog;
 	}
-
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
 
 unsigned int Shader::MakeShader(unsigned int type, std::string path)
 {
-	std::ifstream file;
-	file.open(path.c_str(), std::ifstream::in);
+	std::ifstream file;							// CREATE: New file
+	file.open(path.c_str(), std::ifstream::in); // IMPORT Object
 	if (!file.good())
 	{
 		return -1;
