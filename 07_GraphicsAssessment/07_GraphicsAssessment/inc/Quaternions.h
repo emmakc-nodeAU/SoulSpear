@@ -12,7 +12,7 @@ public:
 	void shutdown();
 
 	void update(float dt);
-	glm::vec3		getPosition();
+	glm::vec3 getPosition();
 
 protected:
 

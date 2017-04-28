@@ -7,8 +7,10 @@ out vec4 colour;
 
 uniform mat4 projectionView;
 
-void main ()
+void main()
 {
 	colour = Colour;
 	gl_Position = projectionView * Position;
 }
+
+

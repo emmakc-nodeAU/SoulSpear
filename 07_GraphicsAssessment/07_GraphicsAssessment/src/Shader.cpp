@@ -4,8 +4,6 @@
 #include <assert.h>
 #include <fstream>
 #include <sstream>
-//#include "ParticleEmitter.h"
-//#include "GraphicsAssessment.h"
 
 Shader::Shader(std::string vertexPath, std::string fragmentPath)
 	: m_programID(-1)
@@ -27,22 +25,48 @@ Shader::Shader(Shader && other)
 	other.m_programID = -1;
 }
 
+const unsigned int Shader::LoadShader(unsigned int type, std::string path)
+{
+	std::ifstream file; // CREATE NEW FILE
+	file.open(path.c_str(), std::ifstream::in); // Import object
+	if (!file.good()) // Success Check
+	{
+		return -1;
+	}
+
+	// READ IN DATA to TEMP
+	std::stringstream ss; // If successful.
+	ss << file.rdbuf(); // Read from file buffer and move to the 'SS'.
+	file.close(); // CLOSE file
+	std::string codeString = ss.str();
+
+	// CREATE Shader
+	unsigned int shaderHandler = glCreateShader(type);
+	const char* shaderCode = codeString.c_str();
+
+	glShaderSource(shaderHandler, 1, (const char**)&shaderCode, 0);
+	glCompileShader(shaderHandler);
+
+	// Return compiled shader for shader program.
+	return shaderHandler;
+}
+
 void Shader::MakeShaderProgram(std::string vertexPath, std::string fragmentPath)
 {
-	// Load shaders from disk
+	// LOAD SHADER
 	unsigned int vertexShader = MakeShader(GL_VERTEX_SHADER, vertexPath);
 	unsigned int fragmentShader = MakeShader(GL_FRAGMENT_SHADER, fragmentPath);
 	
 	assert(vertexShader != -1 && fragmentShader != -1);
 
-	// Create shader program, attach required shaders, then link shaders together
+	// CREATE SHADER/ attach shaders/ link shaders
 	m_programID = glCreateProgram();
 	glAttachShader(m_programID, vertexShader);
 	glAttachShader(m_programID, fragmentShader);
 	glLinkProgram(m_programID);
 
 	int success = 0;
-	// IF FAILS - show errors:
+	// IF FAILS:
 	glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
 	if(success == GL_FALSE)
 	{

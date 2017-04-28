@@ -6,6 +6,9 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include <glm\gtc\quaternion.hpp>
+#include <glm\gtx\quaternion.hpp>
+
 namespace aie
 {
 	class Texture;
@@ -16,6 +19,7 @@ class RenderData;
 class Shader;
 class Camera;
 class ParticleEmitter;
+class GPUparticleEmitter;
 class PostProcessing;
 
 struct Vertex
@@ -92,6 +96,9 @@ protected:
 	Quaternions*		Cube;
 	ParticleEmitter*	m_emitter;
 	Shader*				m_shaderParticles;
+
+	// GPU PARTICLES ----------------------------
+	GPUparticleEmitter* e_gpuEmitter;
 
 	// CUBE--------------------------------------
 	GLMesh m_cube;				 // Object

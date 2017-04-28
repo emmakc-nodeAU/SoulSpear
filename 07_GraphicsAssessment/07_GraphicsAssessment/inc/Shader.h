@@ -13,7 +13,7 @@ public:
 	Shader& operator=(const Shader& other) = delete;
 
 	unsigned int GetProgramID() const { return m_programID; };
-
+	static const unsigned int LoadShader(unsigned int type, std::string path);
 private:
 
 	// Assemble Shaders, Make program

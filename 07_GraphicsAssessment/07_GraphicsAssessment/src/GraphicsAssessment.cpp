@@ -7,8 +7,9 @@
 #include <gl_core_4_4.h>
 #include <GLFW\glfw3.h>
 
-#include <Quaternions.h>
+#include "Quaternions.h"
 #include "ParticleEmitter.h"
+#include "GPUparticleEmitter.h"
 
 #include <Texture.h>
 #include "RenderData.h"
@@ -72,11 +73,16 @@ bool GraphicsAssessment::startup() {
 	m_SoulSpearSpecular = new aie::Texture("./models/soulspear/soulspear_specular.tga");
 	
 	// PARTICLES
-		m_emitter = new ParticleEmitter();
-	m_emitter->initalise(100, 500,
-		0.1f, 1.0f,
-		1, 5,
-		1, 0.1f,
+	m_emitter = new ParticleEmitter();
+	m_emitter->initalise(1000, 5000,
+	0.1f, 1.0f,
+	1, 5,
+	1, 0.1f,
+	glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
+	// GPU PARTICLES
+	e_gpuEmitter = new GPUparticleEmitter();
+	e_gpuEmitter->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
@@ -144,6 +150,9 @@ void GraphicsAssessment::update(float deltaTime) {
 	m_emitter->update(deltaTime, m_camera->getTransform());
 	m_emitter->movePosition(Cube->getPosition());
 
+	// GPU PARTICLES
+	e_gpuEmitter->movePosition(Cube->getPosition());
+
 	// QUIT on ESC
 	aie::Input* input = aie::Input::getInstance();
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -203,6 +212,11 @@ void GraphicsAssessment::draw() {
 	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera->getProjectionView()[0][0]);
 	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
 	m_emitter->draw();
+
+	// GPU PARTICLES
+	e_gpuEmitter->draw((float)glfwGetTime(),
+		m_camera->getTransform(),
+		m_camera->getProjectionView());
 
 	// POST PROCESSING:
 	glBindFramebuffer(GL_FRAMEBUFFER, m_postprocessing->m_fbo);

@@ -6,7 +6,7 @@ ParticleEmitter::ParticleEmitter()
 	: m_particles(nullptr),
 	m_firstDead(0),
 	m_maxParticles(0),
-	m_position(0, 0, 0),
+	m_position(0),
 	m_vao(0), m_vbo(0), m_ibo(0),
 	m_vertexData(nullptr) 
 {
@@ -185,7 +185,7 @@ void ParticleEmitter::initalise(unsigned int a_maxParticles,
 
 	glEnableVertexAttribArray(0); // Position
 	glEnableVertexAttribArray(1); // Colour
-								  // POSITION
+	// POSITION
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
 		sizeof(ParticleVertex), 0);
 	// COLOUR

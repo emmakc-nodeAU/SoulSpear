@@ -92,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="inc\GPUParticleEmitter.cpp" />
     <ClCompile Include="inc\Quaternions.cpp" />
     <ClCompile Include="src\PostProcessing.cpp" />
     <ClCompile Include="src\Camera.cpp" />
@@ -106,6 +107,7 @@
   <ItemGroup>
     <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\GeometryHelper.h" />
+    <ClInclude Include="inc\GPUParticleEmitter.h" />
     <ClInclude Include="inc\PostProcessing.h" />
     <ClInclude Include="inc\Quaternions.h" />
     <ClInclude Include="inc\RenderData.h" />

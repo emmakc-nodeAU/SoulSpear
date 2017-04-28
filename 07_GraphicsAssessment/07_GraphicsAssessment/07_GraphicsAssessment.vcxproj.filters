@@ -45,6 +45,9 @@
     <ClCompile Include="inc\Quaternions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="inc\GPUParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\Shader.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\Quaternions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\GPUParticleEmitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
