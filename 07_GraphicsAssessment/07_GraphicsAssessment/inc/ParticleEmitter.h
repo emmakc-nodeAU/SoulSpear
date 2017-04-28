@@ -70,9 +70,6 @@ protected:
 	glm::vec4		m_startColour;
 	glm::vec4		m_endColour;
 
-	glm::vec4		m_startColour;
-	glm::vec4		m_endColour;
-
 	// DEAD PARTICLE EMITTER
 	void emit();
 private:

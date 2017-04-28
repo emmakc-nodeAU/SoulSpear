@@ -1,7 +1,5 @@
 #include "ParticleEmitter.h"
 #include <gl_core_4_4.h>
-//#include <glm\glm.hpp>
-//#include <glm\ext.hpp>
 #include <GLFW\glfw3.h>
 
 ParticleEmitter::ParticleEmitter() 
@@ -37,7 +35,6 @@ void ParticleEmitter::update(float a_deltaTime, const glm::mat4& a_cameraTransfo
 		m_emitTimer -= m_emitRate;
 	}
 	unsigned int quad = 0;
-
 	float temp = m_firstDead;
 
 	// Update particles and turn live particles into billboard quads
@@ -140,15 +137,15 @@ void ParticleEmitter::initalise(unsigned int a_maxParticles,
 	m_emitRate = 1.0f / a_emitRate;
 
 	// STORE: Variabled passed in
-	m_startColour = a_startColour;
-	m_endColour = a_endColour;
-	m_startSize = a_startSize;
-	m_endSize = a_endSize;
-	m_velocityMin = a_velocityMin;
-	m_velocityMax = a_velocityMax;
-	m_lifespanMin = a_lifetimeMin;
-	m_lifespanMax = a_lifetimeMax;
-	m_maxParticles = a_maxParticles;
+	m_startColour	= a_startColour;
+	m_endColour		= a_endColour;
+	m_startSize		= a_startSize;
+	m_endSize		= a_endSize;
+	m_velocityMin	= a_velocityMin;
+	m_velocityMax	= a_velocityMax;
+	m_lifespanMin	= a_lifetimeMin;
+	m_lifespanMax	= a_lifetimeMax;
+	m_maxParticles	= a_maxParticles;
 
 	// CREATE: Particle Array
 	m_particles = new Particle[m_maxParticles];

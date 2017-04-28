@@ -4,19 +4,22 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <gl_core_4_4.h>
+#include <GLFW\glfw3.h>
+
+#include <Quaternions.h>
+#include "ParticleEmitter.h"
+
 #include <Texture.h>
 #include "RenderData.h"
 #include "FlyCamera.h"
 #include "Shader.h"
 #include "GeometryHelper.h"
-#include <gl_core_4_4.h>
 
 #include <imgui.h>
-#include "ParticleEmitter.h"
 
 #include "PostProcessing.h"
 #include "SphereBoundingVolume.h"
-
 
 using glm::vec3;
 using glm::vec4;
@@ -52,6 +55,11 @@ bool GraphicsAssessment::startup() {
 	
 	// SHADER
 	LoadShader();
+	
+	// QUATERNION
+	Cube = new Quaternions;
+	Cube->startup();
+	
 	// GEOMETRY
 	CreateCube();
 	CreateGrid();
@@ -62,6 +70,7 @@ bool GraphicsAssessment::startup() {
 	m_SoulSpearDiffuse = new aie::Texture("./models/soulspear/soulspear_diffuse.tga");	
 	m_SoulSpearNormal = new aie::Texture("./models/soulspear/soulspear_normal.tga");
 	m_SoulSpearSpecular = new aie::Texture("./models/soulspear/soulspear_specular.tga");
+	
 	// PARTICLES
 		m_emitter = new ParticleEmitter();
 	m_emitter->initalise(100, 500,
@@ -69,16 +78,15 @@ bool GraphicsAssessment::startup() {
 		1, 5,
 		1, 0.1f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
 	
 	// POST PROCESSING
 	m_postprocessing = new PostProcessing();
 	m_postprocessing->startup();
 	m_shaderPostProcessing = new Shader("./shaders/PostProcessing.vert", "./shaders/PostProcessing.frag");
+	
 	return true;
-
-	// LIGHTING
-
 }
 
 void GraphicsAssessment::shutdown() {
@@ -97,7 +105,6 @@ void GraphicsAssessment::shutdown() {
 void GraphicsAssessment::update(float deltaTime) {
 
 	float time = getTime();
-	m_camera->Update(deltaTime);
 
 	// LIGHT Orbits around x axis
 	m_lightPosition.x = glm::cos(time) * 5;
@@ -132,11 +139,10 @@ void GraphicsAssessment::update(float deltaTime) {
 	Gizmos::addTransform(mat4(1));
 
 	// PARTICLES
+	m_camera->Update(deltaTime);
+	Cube->update(deltaTime);
 	m_emitter->update(deltaTime, m_camera->getTransform());
-
-	// CAMERA
-	//m_viewMatrix = glm::lookAt(vec3(glm::sin(time) * 10, 10, glm::cos(time) * 10),
-	//vec3(0), vec3(0, 1, 0));
+	m_emitter->movePosition(Cube->getPosition());
 
 	// QUIT on ESC
 	aie::Input* input = aie::Input::getInstance();
@@ -147,16 +153,13 @@ void GraphicsAssessment::update(float deltaTime) {
 void GraphicsAssessment::draw() {
 	// CAMERA
 	Gizmos::draw(m_camera->getProjectionView());
-	//glm::mat4 projView = m_projectionMatrix * m_viewMatrix;
 
 	// wipe the screen to the background colour
 	clearScreen();
 
 	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
-	//m_shaderProgram->Enable(); // glUseProgram(m_shader);
 	glUseProgram(m_shaderProgram->GetProgramID());
 	// Step 2: Calculate projection view matrix, pass into shader program
-	//glm::mat4 projectionView = m_projectionMatrix * m_viewMatrix;
 	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &m_camera->getProjectionView()[0][0]);
 
 	// Lighting diffuse shader
@@ -197,7 +200,8 @@ void GraphicsAssessment::draw() {
 	// PARTICLES
 	glUseProgram(m_shaderParticles->GetProgramID());
 	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
-	glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera->getProjectionView()[0][0]);
+	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
 	m_emitter->draw();
 
 	// POST PROCESSING:

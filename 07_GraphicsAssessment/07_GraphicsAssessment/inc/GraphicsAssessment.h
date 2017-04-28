@@ -10,6 +10,8 @@ namespace aie
 {
 	class Texture;
 }
+
+class Quaternions;
 class RenderData;
 class Shader;
 class Camera;
@@ -87,25 +89,24 @@ protected:
 	aie::Texture *m_SoulSpearSpecular;
 
 	// PARTICLES---------------------------------
-	ParticleEmitter *m_emitter;
-	Shader*	m_shaderParticles;
+	Quaternions*		Cube;
+	ParticleEmitter*	m_emitter;
+	Shader*				m_shaderParticles;
 
 	// CUBE--------------------------------------
-		// Object
-	GLMesh m_cube;
-		// Texture
-	aie::Texture *m_whiteTexture;
+	GLMesh m_cube;				 // Object
+	aie::Texture *m_whiteTexture;// Texture
 
 	// GRID -------------------------------------
-	GLMesh m_grid;					// Object
+	GLMesh m_grid;				// Object
 	aie::Texture *m_grass;		// Texture
-	aie::Texture *m_floormap;		// bitmap
-	//aie::Texture *m_heightmap;	// heightmap
+	aie::Texture *m_floormap;	// bitmap
+	//aie::Texture *m_heightmap;// heightmap
 
 	// LIGHTING
-	glm::vec3 m_lightPosition = glm::vec3(0, 3, 0);
-	glm::vec3 m_lightColour = glm::vec3(1, 0.8, 0.8);
-	float m_ambientStrength = 0.1f;
+	glm::vec3 m_lightPosition	= glm::vec3(0, 3, 0);
+	glm::vec3 m_lightColour		= glm::vec3(1, 0.8, 0.8);
+	float m_ambientStrength		= 0.1f;
 
 	// POST PROCESSING
 	PostProcessing* m_postprocessing;
