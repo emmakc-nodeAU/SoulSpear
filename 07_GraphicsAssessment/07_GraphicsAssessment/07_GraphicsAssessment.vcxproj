@@ -92,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="inc\Quaternions.cpp" />
     <ClCompile Include="src\PostProcessing.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\FlyCamera.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\GeometryHelper.h" />
     <ClInclude Include="inc\PostProcessing.h" />
+    <ClInclude Include="inc\Quaternions.h" />
     <ClInclude Include="inc\RenderData.h" />
     <ClInclude Include="inc\Shader.h" />
     <ClInclude Include="inc\GraphicsAssessment.h" />
