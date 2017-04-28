@@ -93,12 +93,19 @@ protected:
 	aie::Texture *m_SoulSpearSpecular;
 
 	// PARTICLES---------------------------------
-	Quaternions*		Cube;
-	ParticleEmitter*	m_emitter;
+	Quaternions*		Cube1;
+	Quaternions*		Cube2;
+	Quaternions*		Cube3;
+
+	ParticleEmitter*	m_emitter1;
+	ParticleEmitter*	m_emitter2;
+	ParticleEmitter*	m_emitter3;
 	Shader*				m_shaderParticles;
 
 	// GPU PARTICLES ----------------------------
-	GPUparticleEmitter* e_gpuEmitter;
+	GPUparticleEmitter* e_gpuEmitter1;
+	GPUparticleEmitter* e_gpuEmitter2;
+	GPUparticleEmitter* e_gpuEmitter3;
 
 	// CUBE--------------------------------------
 	GLMesh m_cube;				 // Object

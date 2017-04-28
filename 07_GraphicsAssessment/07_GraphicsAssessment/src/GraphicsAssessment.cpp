@@ -58,8 +58,14 @@ bool GraphicsAssessment::startup() {
 	LoadShader();
 	
 	// QUATERNION
-	Cube = new Quaternions;
-	Cube->startup();
+	Cube1 = new Quaternions;
+	Cube1->startup();
+
+	Cube2 = new Quaternions;
+	Cube2->startup();
+
+	Cube3 = new Quaternions;
+	Cube3->startup();
 	
 	// GEOMETRY
 	CreateCube();
@@ -72,17 +78,40 @@ bool GraphicsAssessment::startup() {
 	m_SoulSpearNormal = new aie::Texture("./models/soulspear/soulspear_normal.tga");
 	m_SoulSpearSpecular = new aie::Texture("./models/soulspear/soulspear_specular.tga");
 	
-	// PARTICLES
-	m_emitter = new ParticleEmitter();
-	m_emitter->initalise(1000, 5000,
+	// PARTICLES 1
+	m_emitter1 = new ParticleEmitter();
+	m_emitter1->initalise(1000, 5000,
 	0.1f, 1.0f,
 	1, 5,
 	1, 0.1f,
 	glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	// PARTICLES 2
+	m_emitter2 = new ParticleEmitter();
+	m_emitter2->initalise(1000, 5000,
+		0.1f, 1.0f,
+		1, 5,
+		1, 0.1f,
+		glm::vec4(5, 0, 0, 1), glm::vec4(5, 1, 0, 1));
+	// PARTICLES 3
+	m_emitter3 = new ParticleEmitter();
+	m_emitter3->initalise(1000, 5000,
+		0.1f, 1.0f,
+		1, 5,
+		1, 0.1f,
+		glm::vec4(10, 0, 0, 1), glm::vec4(10, 1, 0, 1));
+
 
 	// GPU PARTICLES
-	e_gpuEmitter = new GPUparticleEmitter();
-	e_gpuEmitter->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+	e_gpuEmitter1 = new GPUparticleEmitter();
+	e_gpuEmitter1->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	// 2
+	e_gpuEmitter2 = new GPUparticleEmitter();
+	e_gpuEmitter2->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	// 3
+	e_gpuEmitter3 = new GPUparticleEmitter();
+	e_gpuEmitter3->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
@@ -146,12 +175,20 @@ void GraphicsAssessment::update(float deltaTime) {
 
 	// PARTICLES
 	m_camera->Update(deltaTime);
-	Cube->update(deltaTime);
-	m_emitter->update(deltaTime, m_camera->getTransform());
-	m_emitter->movePosition(Cube->getPosition());
+	Cube1->update(deltaTime);
+	m_emitter1->update(deltaTime, m_camera->getTransform());
+	m_emitter1->movePosition(Cube1->getPosition());
+	// 2
+	Cube2->update(deltaTime);
+	m_emitter2->update(deltaTime, m_camera->getTransform());
+	m_emitter2->movePosition(Cube2->getPosition());
+	// 3
+	Cube3->update(deltaTime);
+	m_emitter3->update(deltaTime, m_camera->getTransform());
+	m_emitter3->movePosition(Cube3->getPosition());
 
 	// GPU PARTICLES
-	e_gpuEmitter->movePosition(Cube->getPosition());
+	//e_gpuEmitter->movePosition(Cube->getPosition());
 
 	// QUIT on ESC
 	aie::Input* input = aie::Input::getInstance();
@@ -206,18 +243,6 @@ void GraphicsAssessment::draw() {
 		glDrawArrays(GL_TRIANGLES, 0, mesh->GetNumberOfIndicies());
 	}
 
-	// PARTICLES
-	glUseProgram(m_shaderParticles->GetProgramID());
-	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera->getProjectionView()[0][0]);
-	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
-	m_emitter->draw();
-
-	// GPU PARTICLES
-	e_gpuEmitter->draw((float)glfwGetTime(),
-		m_camera->getTransform(),
-		m_camera->getProjectionView());
-
 	// POST PROCESSING:
 	glBindFramebuffer(GL_FRAMEBUFFER, m_postprocessing->m_fbo);
 	glViewport(0, 0, 512, 512);
@@ -227,7 +252,6 @@ void GraphicsAssessment::draw() {
 	// REFLECTION OBJECTS TO RENDER HERE:
 	Gizmos::draw(m_camera->getProjectionView());
 	soulSpear();
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, 1280, 720);
 	
@@ -252,6 +276,29 @@ void GraphicsAssessment::draw() {
 	//	0.1f, 1000.0f);	
 
 	// Step 6: Deactivate Shader program
+
+	// PARTICLES
+	glUseProgram(m_shaderParticles->GetProgramID());
+	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera->getProjectionView()[0][0]);
+	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
+	m_emitter1->draw();
+	m_emitter2->draw();
+	m_emitter3->draw();
+
+	// GPU PARTICLES
+	e_gpuEmitter1->draw((float)glfwGetTime(),
+		m_camera->getTransform(),
+		m_camera->getProjectionView());
+
+	e_gpuEmitter2->draw((float)glfwGetTime(),
+		m_camera->getTransform(),
+		m_camera->getProjectionView());
+
+	e_gpuEmitter3->draw((float)glfwGetTime(),
+		m_camera->getTransform(),
+		m_camera->getProjectionView());
+
 	glUseProgram(0);
 	Gizmos::draw(m_camera->getProjectionView());
 }
