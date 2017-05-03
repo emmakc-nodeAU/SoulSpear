@@ -80,21 +80,21 @@ bool GraphicsAssessment::startup() {
 	
 	// PARTICLES 1
 	m_emitter1 = new ParticleEmitter();
-	m_emitter1->initalise(1000, 5000,
+	m_emitter1->initalise(5, 20,
 	0.1f, 1.0f,
 	1, 5,
 	1, 0.1f,
 	glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 	// PARTICLES 2
 	m_emitter2 = new ParticleEmitter();
-	m_emitter2->initalise(1000, 5000,
+	m_emitter2->initalise(200, 500,
 		0.1f, 1.0f,
 		1, 5,
 		1, 0.1f,
 		glm::vec4(5, 0, 0, 1), glm::vec4(5, 1, 0, 1));
 	// PARTICLES 3
 	m_emitter3 = new ParticleEmitter();
-	m_emitter3->initalise(1000, 5000,
+	m_emitter3->initalise(20, 50,
 		0.1f, 1.0f,
 		1, 5,
 		1, 0.1f,
@@ -103,15 +103,15 @@ bool GraphicsAssessment::startup() {
 
 	// GPU PARTICLES
 	e_gpuEmitter1 = new GPUparticleEmitter();
-	e_gpuEmitter1->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+	e_gpuEmitter1->initalise(100, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 	// 2
 	e_gpuEmitter2 = new GPUparticleEmitter();
-	e_gpuEmitter2->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+	e_gpuEmitter2->initalise(100, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 	// 3
 	e_gpuEmitter3 = new GPUparticleEmitter();
-	e_gpuEmitter3->initalise(100000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
+	e_gpuEmitter3->initalise(10000, 0.01f, 5.0f, 5, 20, 0.001f, 0.01f,
 		glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
 
 	m_shaderParticles = new Shader("./shaders/Particle.vert", "./shaders/Particle.frag");
@@ -120,6 +120,9 @@ bool GraphicsAssessment::startup() {
 	m_postprocessing = new PostProcessing();
 	m_postprocessing->startup();
 	m_shaderPostProcessing = new Shader("./shaders/PostProcessing.vert", "./shaders/PostProcessing.frag");
+
+	// LIGHTING
+	m_shaderProgram = new Shader("./shaders/DiffuseLight.vert", "./shaders/DiffuseLight.frag");
 	
 	return true;
 }
@@ -205,8 +208,6 @@ void GraphicsAssessment::draw() {
 
 	// Step 1: Before rendering geometry, tell OpenGl to use Shader Program
 	glUseProgram(m_shaderProgram->GetProgramID());
-	// Step 2: Calculate projection view matrix, pass into shader program
-	glUniformMatrix4fv(m_projectionViewLoc, 1, false, &m_camera->getProjectionView()[0][0]);
 
 	// Lighting diffuse shader
 	glUniform1fv(glGetUniformLocation(m_shaderProgram->GetProgramID(), "lightAmbientStrength"), 1, &m_ambientStrength);
@@ -215,10 +216,10 @@ void GraphicsAssessment::draw() {
 
 	// RENDER CUBE:
 	// Position |  ?  | Colour | Texture
-	RenderMesh(&m_cube, glm::vec3(-4, 2, 6), glm::vec3(1, 1, 1), glm::vec3(2, 0, 2), m_whiteTexture);		// SCREEN	- LHS
-	RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);		// SCREEN	- RHS
-	RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);		// PLATFORM - LHS
-	RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);		// PLATFORM - RHS
+	RenderMesh(&m_cube, glm::vec3(-4, 2, 6), glm::vec3(1, 1, 1), glm::vec3(2, 0, 2), m_whiteTexture);	// SCREEN	- LHS
+	RenderMesh(&m_cube, glm::vec3(-4, 2, -6), glm::vec3(1, 1, 1), glm::vec3(1, 0, 2), m_whiteTexture);	// SCREEN	- RHS
+	RenderMesh(&m_cube, glm::vec3(-2, 2, 4), glm::vec3(1, 1, 1), glm::vec3(0, 2, 1), m_whiteTexture);	// PLATFORM - LHS
+	RenderMesh(&m_cube, glm::vec3(-2, 2, -4), glm::vec3(1, 1, 1), glm::vec3(1, 2, 1), m_whiteTexture);	// PLATFORM - RHS
 	RenderMesh(&m_cube, glm::vec3(2, 2, 0), glm::vec3(1, 1, 1), glm::vec3(2, 2, 2), m_whiteTexture);	// PLATFORM - CENTRE
 
 	// RENDER GRID:
@@ -228,7 +229,6 @@ void GraphicsAssessment::draw() {
 	// 1. Select Shader Program:
 	glUseProgram(m_shaderSoulSpear->GetProgramID());
 	// 2. Calculate PVM, pass into shader program
-//	glm::mat4 projectionView = m_projectionMatrix * m_viewMatrix;
 	int loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "projectionViewWorldMatrix");
 	glUniformMatrix4fv(loc, 1, false, &m_camera->getProjectionView()[0][0]);
 	
@@ -249,7 +249,8 @@ void GraphicsAssessment::draw() {
 	
 	glClearColor(0.25f, 0.25f, 0.25f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// REFLECTION OBJECTS TO RENDER HERE:
+
+	// REFLECTION OBJECTS:
 	Gizmos::draw(m_camera->getProjectionView());
 	soulSpear();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -270,18 +271,11 @@ void GraphicsAssessment::draw() {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	soulSpear();
 
-	// WINDOW RESIZE
-	//m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
-	//	getWindowWidth() / (float)getWindowHeight(),
-	//	0.1f, 1000.0f);	
-
-	// Step 6: Deactivate Shader program
 
 	// PARTICLES
 	glUseProgram(m_shaderParticles->GetProgramID());
 	loc = glGetUniformLocation(m_shaderParticles->GetProgramID(), "projectionView");
 	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera->getProjectionView()[0][0]);
-	//glUniformMatrix4fv(loc, 1, false, &(m_camera->getProjectionView()[0][0]));
 	m_emitter1->draw();
 	m_emitter2->draw();
 	m_emitter3->draw();
@@ -299,6 +293,7 @@ void GraphicsAssessment::draw() {
 		m_camera->getTransform(),
 		m_camera->getProjectionView());
 
+	// DEACTIVATE Shaders
 	glUseProgram(0);
 	Gizmos::draw(m_camera->getProjectionView());
 }
@@ -499,12 +494,6 @@ void GraphicsAssessment::CreateGrid()
 	*/
 
 	glm::vec4 white(1.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "White"
-	//glm::vec4 red(1.0f, 0.0f, 0.0f, 1.0f);	// Defined colour variable "Red"
-	//glm::vec4 yellow(1.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Yellow"
-	//glm::vec4 green(0.0f, 1.0f, 0.0f, 1.0f);	// Defined colour variable "Green"
-	//glm::vec4 cyan(0.0f, 1.0f, 1.0f, 1.0f);	// Defined colour variable "Cyan"
-	//glm::vec4 blue(0.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Blue"
-	//glm::vec4 magenta(1.0f, 0.0f, 1.0f, 1.0f);	// Defined colour variable "Magenta"
 
 	std::vector<Vertex> verts;
 
@@ -695,8 +684,21 @@ void GraphicsAssessment::soulSpear()
 	//assert(loc != -1);
 	glUniform1i(loc, 0); // Change between, 0-2 to load different maps. (Diffuse, Normal & Specular.
 
+	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "LightAmbient");
+	assert(loc != -1);
+	glm::vec4 ambientColour(m_ambientStrength, m_ambientStrength, m_ambientStrength, 1.0f);
+	glUniform4fv(loc, 1, glm::value_ptr(ambientColour));
+	//glUniform3fv(loc, 1, &ambientColour.x);
 
+	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "LightDiffuse");
+	assert(loc != -1);
+	glm::vec4 lightColour(m_lightColour.r, m_lightColour.g, m_lightColour.b, 1.0f);
+	glUniform4fv(loc, 1, glm::value_ptr(lightColour));
 
+	loc = glGetUniformLocation(m_shaderSoulSpear->GetProgramID(), "LightPosition");
+	assert(loc != -1);
+	//glm::vec4 lightColour(m_lightColour.r, m_lightColour.g, m_lightColour.b, 1.0f);
+	glUniform3fv(loc, 1, glm::value_ptr(m_lightPosition));
 
 	for (auto& renderData : m_SoulSpear)
 	{

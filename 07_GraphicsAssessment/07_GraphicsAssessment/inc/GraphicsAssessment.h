@@ -77,9 +77,8 @@ protected:
 
 	// CAMERA
 	Camera *m_camera;
-	GLMesh m_skybox;
 
-	Shader *m_shaderProgram;
+	Shader *m_shaderProgram;			// Lighting
 	unsigned int m_projectionViewLoc;
 
 	// SOULSPEAR-------------------------------
@@ -115,7 +114,6 @@ protected:
 	GLMesh m_grid;				// Object
 	aie::Texture *m_grass;		// Texture
 	aie::Texture *m_floormap;	// bitmap
-	//aie::Texture *m_heightmap;// heightmap
 
 	// LIGHTING
 	glm::vec3 m_lightPosition	= glm::vec3(0, 3, 0);
@@ -125,6 +123,5 @@ protected:
 	// POST PROCESSING
 	PostProcessing* m_postprocessing;
 	Shader* m_shaderPostProcessing;
-	//glm::mat4 projectionView = m_projectionMatrix * m_viewMatrix;
 	void soulSpear();
 };
